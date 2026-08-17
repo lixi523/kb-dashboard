@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识库看板</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+/* === Trae 设计 Token (dark only) === */
+@theme inline {
+  --radius-2: 2px; --radius-4: 4px; --radius-6: 6px; --radius-8: 8px; --radius-10: 10px; --radius-full: 9999px;
+  --spacer-0: 0px; --spacer-4: 4px; --spacer-6: 6px; --spacer-8: 8px; --spacer-12: 12px; --spacer-16: 16px; --spacer-24: 24px; --spacer-32: 32px; --spacer-40: 40px;
+  --color-bg-base-default: #1A1B1D; --color-bg-base-secondary: #222427; --color-bg-base-tertiary: #2A2D31;
+  --color-bg-overlay-l1: rgba(224,226,242,0.04); --color-bg-overlay-l2: rgba(224,226,242,0.06); --color-bg-overlay-l3: rgba(224,226,242,0.08); --color-bg-overlay-l4: rgba(224,226,242,0.12);
+  --color-bg-brand: #32F08C; --color-bg-brand-hover: #0FDC78; --color-bg-brand-disabled: rgba(50,240,140,0.2); --color-bg-brand-popup: rgba(50,240,140,0.12);
+  --color-text-default: #D1D3DB; --color-text-default-hover: #F5F9FE; --color-text-default-active: #F5F9FE; --color-text-secondary: #9599A6; --color-text-tertiary: #666B75; --color-text-disabled: #666B75; --color-text-onbrand: #0C0C0D; --color-text-onaccent: #0C0C0D; --color-text-brand: #32F08C; --color-text-brand-hover: #0FDC78;
+  --color-border-neutral-l1: rgba(224,226,242,0.1); --color-border-neutral-l2: rgba(224,226,242,0.16); --color-border-neutral-l3: rgba(224,226,242,0.2); --color-border-contrast: #FFFFFF; --color-border-brand: #32F08C;
+  --color-status-primary-default: #387BFF; --color-status-primary-hover: #4C88FF; --color-status-primary-active: #1759DD; --color-status-primary-surface-l1: rgba(53,121,255,0.18); --color-status-primary-surface-l2: rgba(53,121,255,0.28); --color-status-primary-surface-l3: rgba(53,121,255,0.36);
+  --color-status-success-default: #33C192; --color-status-success-hover: #5ED4AD; --color-status-success-active: #27B082; --color-status-success-surface-l1: rgba(0,165,110,0.18); --color-status-success-surface-l2: rgba(0,165,110,0.28); --color-status-success-surface-l3: rgba(0,165,110,0.36);
+  --color-status-alert-default: #D29D00; --color-status-alert-hover: #DFB949; --color-status-alert-active: #AB8820; --color-status-alert-surface-l1: rgba(210,157,0,0.16); --color-status-alert-surface-l2: rgba(210,157,0,0.28); --color-status-alert-surface-l3: rgba(210,157,0,0.36);
+  --color-status-warning-default: #D27E24; --color-status-warning-hover: #D78B28; --color-status-warning-active: #B46510; --color-status-warning-surface-l1: rgba(210,126,36,0.16); --color-status-warning-surface-l2: rgba(210,126,36,0.28); --color-status-warning-surface-l3: rgba(210,126,36,0.36);
+  --color-status-error-default: #F65A5A; --color-status-error-hover: #F86262; --color-status-error-active: #B33636; --color-status-error-surface-l1: rgba(246,70,70,0.18); --color-status-error-surface-l2: rgba(246,70,70,0.28); --color-status-error-surface-l3: rgba(246,70,70,0.36);
+  --color-brand-green-100: #E5FFF2; --color-brand-green-200: #B4FDD9; --color-brand-green-300: #85FABF; --color-brand-green-400: #5CF5A8; --color-brand-green-500: #32F08C; --color-brand-green-600: #0FDC78; --color-brand-green-700: #0AB861; --color-brand-green-800: #05994F; --color-brand-green-900: #02743B; --color-brand-green-1000: #004D26;
+  --color-viz-series-coral: #F87454; --color-viz-series-amber: #EDAA45; --color-viz-series-mint: #1DC981; --color-viz-series-teal: #78F2F2; --color-viz-series-sky: #22A5F7; --color-viz-series-violet: #B655FC; --color-viz-series-magenta: #FB9DD7; --color-viz-series-indigo: #B6A3FF; --color-viz-series-lime: #A6EA39; --color-viz-series-slate: #859EAD; --color-viz-ui-bg-chart: #202123; --color-viz-ui-bg-tooltip: #1A1B1D; --color-viz-ui-chart-title: #D1D3DB; --color-viz-ui-chart-subtitle: #9599A6; --color-viz-ui-chart-axis: rgba(224,226,242,0.16); --color-viz-ui-chart-tick: #9599A6; --color-viz-ui-legend-label: #9599A6; --color-viz-ui-legend-value: #D1D3DB;
+  --color-icon-default: #D1D3DB; --color-icon-secondary: #9599A6; --color-icon-tertiary: #666B75; --color-icon-disabled: #666B75; --color-icon-onbrand: #0C0C0D; --color-icon-brand: #32F08C;
+}
+:root {
+  --radius-2: 2px; --radius-4: 4px; --radius-6: 6px; --radius-8: 8px; --radius-10: 10px; --radius-full: 9999px;
+  --spacer-0: 0px; --spacer-4: 4px; --spacer-6: 6px; --spacer-8: 8px; --spacer-12: 12px; --spacer-16: 16px; --spacer-24: 24px; --spacer-32: 32px; --spacer-40: 40px;
+  --bg-base-default: #1A1B1D; --bg-base-secondary: #222427; --bg-base-tertiary: #2A2D31;
+  --bg-overlay-l1: rgba(224,226,242,0.04); --bg-overlay-l2: rgba(224,226,242,0.06); --bg-overlay-l3: rgba(224,226,242,0.08); --bg-overlay-l4: rgba(224,226,242,0.12);
+  --bg-brand: #32F08C; --bg-brand-hover: #0FDC78; --bg-brand-disabled: rgba(50,240,140,0.2); --bg-brand-popup: rgba(50,240,140,0.12);
+  --text-default: #D1D3DB; --text-default-hover: #F5F9FE; --text-default-active: #F5F9FE; --text-secondary: #9599A6; --text-secondary-hover: #D1D3DB; --text-secondary-active: #D1D3DB; --text-tertiary: #666B75; --text-disabled: #666B75; --text-onbrand: #0C0C0D; --text-onaccent: #0C0C0D; --text-brand: #32F08C; --text-brand-hover: #0FDC78;
+  --border-neutral-l1: rgba(224,226,242,0.1); --border-neutral-l2: rgba(224,226,242,0.16); --border-neutral-l3: rgba(224,226,242,0.2); --border-contrast: #FFFFFF; --border-brand: #32F08C;
+  --status-primary-default: #387BFF; --status-primary-hover: #4C88FF; --status-primary-active: #1759DD; --status-primary-surface-l1: rgba(53,121,255,0.18); --status-primary-surface-l2: rgba(53,121,255,0.28); --status-primary-surface-l3: rgba(53,121,255,0.36);
+  --status-success-default: #33C192; --status-success-hover: #5ED4AD; --status-success-active: #27B082; --status-success-surface-l1: rgba(0,165,110,0.18); --status-success-surface-l2: rgba(0,165,110,0.28); --status-success-surface-l3: rgba(0,165,110,0.36);
+  --status-alert-default: #D29D00; --status-alert-hover: #DFB949; --status-alert-active: #AB8820; --status-alert-surface-l1: rgba(210,157,0,0.16); --status-alert-surface-l2: rgba(210,157,0,0.28); --status-alert-surface-l3: rgba(210,157,0,0.36);
+  --status-warning-default: #D27E24; --status-warning-hover: #D78B28; --status-warning-active: #B46510; --status-warning-surface-l1: rgba(210,126,36,0.16); --status-warning-surface-l2: rgba(210,126,36,0.28); --status-warning-surface-l3: rgba(210,126,36,0.36);
+  --status-error-default: #F65A5A; --status-error-hover: #F86262; --status-error-active: #B33636; --status-error-surface-l1: rgba(246,70,70,0.18); --status-error-surface-l2: rgba(246,70,70,0.28); --status-error-surface-l3: rgba(246,70,70,0.36);
+  --brand-green-100: #E5FFF2; --brand-green-200: #B4FDD9; --brand-green-300: #85FABF; --brand-green-400: #5CF5A8; --brand-green-500: #32F08C; --brand-green-600: #0FDC78; --brand-green-700: #0AB861; --brand-green-800: #05994F; --brand-green-900: #02743B; --brand-green-1000: #004D26;
+  --viz-series-coral: #F87454; --viz-series-amber: #EDAA45; --viz-series-mint: #1DC981; --viz-series-teal: #78F2F2; --viz-series-sky: #22A5F7; --viz-series-violet: #B655FC; --viz-series-magenta: #FB9DD7; --viz-series-indigo: #B6A3FF; --viz-series-lime: #A6EA39; --viz-series-slate: #859EAD; --viz-ui-bg-chart: #202123; --viz-ui-bg-tooltip: #1A1B1D; --viz-ui-chart-title: #D1D3DB; --viz-ui-chart-subtitle: #9599A6; --viz-ui-chart-axis: rgba(224,226,242,0.16); --viz-ui-chart-tick: #9599A6; --viz-ui-legend-label: #9599A6; --viz-ui-legend-value: #D1D3DB;
+  --icon-default: #D1D3DB; --icon-default-hover: #F5F9FE; --icon-default-active: #F5F9FE; --icon-secondary: #9599A6; --icon-secondary-hover: #D1D3DB; --icon-secondary-active: #D1D3DB; --icon-tertiary: #666B75; --icon-disabled: #666B75; --icon-onbrand: #0C0C0D; --icon-onaccent: #0C0C0D; --icon-brand: #32F08C; --icon-brand-hover: #0FDC78;
+  --color-background: var(--bg-base-default); --color-surface: var(--bg-base-secondary); --color-surface-variant: var(--bg-base-tertiary); --color-foreground: var(--text-default); --color-foreground-hover: var(--text-default-hover); --color-muted-foreground: var(--text-secondary); --color-disabled-foreground: var(--text-disabled); --color-border: var(--border-neutral-l1); --color-border-strong: var(--border-neutral-l2); --color-border-stronger: var(--border-neutral-l3); --color-border-contrast: var(--border-contrast); --color-primary: var(--bg-brand); --color-primary-hover: var(--bg-brand-hover); --color-primary-disabled: var(--bg-brand-disabled); --color-accent: var(--bg-brand); --color-info: var(--status-primary-default); --color-success: var(--status-success-default); --color-warning: var(--status-warning-default); --color-error: var(--status-error-default); --site-canvas: var(--bg-base-default); --bg-layout-1: var(--bg-base-secondary); --bg-layout-2: var(--bg-overlay-l1); --border-1: var(--border-neutral-l1);
+  --brand-card: var(--bg-base-secondary); --brand-muted: var(--text-secondary); --brand-radius-sm: var(--radius-4); --brand-radius-small: var(--radius-4); --brand-radius-md: var(--radius-8); --brand-radius-medium: var(--radius-8); --brand-radius-lg: var(--radius-10); --brand-radius-large: var(--radius-10);
+}
+
+/* === Layout & Component Styles === */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 11px; }
+body {
+  font-family: "SF Pro Text", system-ui, -apple-system, sans-serif;
+  background: var(--bg-base-default); color: var(--text-default);
+  line-height: 1.35; min-height: 100vh;
+}
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-neutral-l2); border-radius: 3px; }
+
+.dashboard { max-width: 1440px; margin: 0 auto; padding: 4px 8px; }
+
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--spacer-8) 0; border-bottom: 1px solid var(--border-neutral-l1);
+  margin-bottom: var(--spacer-12);
+}
+.header-left { display: flex; align-items: center; gap: 4px; }
+.header-icon { width: 22px; height: 22px; background: var(--bg-brand); border-radius: var(--radius-4); display: flex; align-items: center; justify-content: center; color: #0C0C0D; font-weight: 700; font-size: 11px; }
+.header h1 { font-size: 12px; font-weight: 600; color: var(--text-default-hover); letter-spacing: 0.3px; }
+.header-time { font-size: 9px; color: var(--text-tertiary); }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 4px; }
+@media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 480px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.kpi-card { background: var(--bg-base-secondary); border: 1px solid var(--border-neutral-l1); border-radius: var(--radius-6); padding: var(--spacer-8) var(--spacer-12); position: relative; overflow: hidden; }
+.kpi-card:hover { border-color: var(--border-neutral-l2); }
+.kpi-label { font-size: 9px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.kpi-value { font-size: 20px; font-weight: 600; color: var(--text-default-hover); line-height: 1.1; }
+.kpi-sub { font-size: 8px; color: var(--text-tertiary); margin-top: 1px; }
+.kpi-accent { position: absolute; top: 0; left: 0; width: 3px; height: 100%; }
+.kpi-accent.green { background: var(--bg-brand); }
+.kpi-accent.blue { background: var(--status-primary-default); }
+.kpi-accent.amber { background: var(--status-alert-default); }
+.kpi-accent.purple { background: var(--viz-series-violet); }
+.kpi-accent.coral { background: var(--viz-series-coral); }
+.kpi-accent.teal { background: var(--viz-series-teal); }
+
+.section { margin-bottom: var(--spacer-12); }
+.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.section-title { font-size: 12px; font-weight: 500; color: var(--text-default-hover); }
+.section-badge { font-size: 8px; color: var(--text-tertiary); background: var(--bg-base-tertiary); padding: 1px 4px; border-radius: var(--radius-full); }
+
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacer-8); }
+@media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } }
+.chart-card { background: var(--bg-base-secondary); border: 1px solid var(--border-neutral-l1); border-radius: var(--radius-6); padding: 4px 8px; min-height: 0; }
+.chart-card h3 { font-size: 10px; font-weight: 500; color: var(--text-secondary); margin-bottom: var(--spacer-4); text-transform: uppercase; letter-spacing: 0.5px; }
+.chart-container { width: 100%; height: 150px; }
+
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--spacer-8); }
+@media (max-width: 900px) { .grid-3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .grid-3 { grid-template-columns: 1fr; } }
+
+.scroll-list { max-height: 110px; overflow-y: auto; }
+
+.summary-card { background: var(--bg-base-secondary); border: 1px solid var(--border-neutral-l1); border-radius: var(--radius-6); padding: 4px 8px; }
+.summary-text { font-size: 9px; color: var(--text-secondary); line-height: 1.35; }
+
+.issue-item { padding: 2px 0; border-bottom: 1px solid var(--border-neutral-l1); font-size: 9px; display: flex; align-items: flex-start; gap: 3px; }
+.issue-item:last-child { border-bottom: none; }
+.issue-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
+.issue-dot.error { background: var(--status-error-default); }
+.issue-dot.warning { background: var(--status-alert-default); }
+.issue-dot.info { background: var(--status-primary-default); }
+
+.log-item { padding: 2px 0; border-bottom: 1px solid var(--border-neutral-l1); }
+.log-item:last-child { border-bottom: none; }
+.log-date { font-size: 8px; color: var(--text-tertiary); margin-bottom: 1px; }
+.log-preview { font-size: 9px; color: var(--text-secondary); line-height: 1.3; }
+
+.wiki-tag { display: inline-flex; align-items: center; gap: 2px; padding: 1px 4px; border-radius: var(--radius-4); font-size: 8px; margin: 1px; background: var(--bg-overlay-l1); color: var(--text-default); }
+.wiki-tag .freq { color: var(--text-tertiary); font-size: 7px; }
+
+.footer { text-align: center; padding: 2px 0; border-top: 1px solid var(--border-neutral-l1); font-size: 8px; color: var(--text-tertiary); }
+.empty-state { text-align: center; padding: 4px; color: var(--text-tertiary); font-size: 9px; }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <header class="header">
+    <div class="header-left">
+      <div class="header-icon">KB</div>
+      <h1>知识库看板</h1>
+      <span class="header-time" id="updateTime">加载中...</span>
+    </div>
+    <div class="header-right">
+      <span class="header-time">插件定时更新</span>
+    </div>
+  </header>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="section">
+    <div class="section-header"><span class="section-title">结构与趋势</span></div>
+    <div class="chart-grid">
+      <div class="chart-card"><h3>Notes 子目录分布</h3><div class="chart-container" id="chartNotesDist"></div></div>
+      <div class="chart-card"><h3>wiki 词条分类</h3><div class="chart-container" id="chartWikiCat"></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="chart-grid">
+      <div class="chart-card"><h3>高频双链 TOP 20</h3><div class="chart-container" id="chartTopLinks"></div></div>
+      <div class="chart-card"><h3>简报连续性</h3><div class="chart-container" id="chartBriefs"></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="grid-3">
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">高频双链 TOP 10</span></div>
+        <div id="wikiTopList"></div>
+      </div>
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">结构问题</span><span class="section-badge" id="issueCount">0</span></div>
+        <div id="issueList"></div>
+      </div>
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">最近操作日志</span></div>
+        <div class="scroll-list" id="logList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="grid-3">
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">Inbox 积压</span><span class="section-badge" id="inboxCount">0</span></div>
+        <div id="inboxList" class="scroll-list"></div>
+      </div>
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">认知升级追踪</span></div>
+        <div id="learnTrack"></div>
+      </div>
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">知识提升建议</span></div>
+        <div id="adviseList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer" id="footerNote"></div>
+</div>
+
+<script>
+const KB_DATA = "{\"generated_at\": \"2026-07-30 20:05\", \"summary\": {\"total_md\": 1221, \"dir_counts\": {\"Inbox\": 6, \"Notes\": 913, \"Ideas\": 33, \"wiki\": 191, \"Projects\": 47, \"Logs\": 23, \"Template\": 8}, \"wiki_count\": 191, \"inbox_count\": 6, \"broken_link_estimate\": 11}, \"dirs\": {\"Inbox\": {\"count\": 6, \"subdirs\": {\"AI与Agent\": 1, \"PM与职场\": 1, \"工业自动化\": 1, \"系统与软件\": 1, \"网络与硬件\": 1}}, \"Notes\": {\"count\": 913, \"subdirs\": {\"SCADA_FAQ\": 300, \"IO_FAQ\": 193, \"华康网关_FAQ\": 67, \"系统与软件\": 53, \"工业自动化\": 48, \"pSpace_FAQ\": 46, \"PM与职场\": 42, \"FWebView_FAQ\": 36, \"AI与Agent\": 32, \"网络与硬件\": 24, \"pSpace_手册\": 22, \"eForceCon_手册\": 13, \"pSpace_linux_手册\": 12, \"华康网关_手册\": 9, \"ForceControl_手册\": 5, \"Other_FAQ\": 5, \"FinforWorx_手册\": 3, \"ForceSCADA_手册\": 2}}, \"Ideas\": {\"count\": 33, \"subdirs\": {}}, \"wiki\": {\"count\": 191, \"subdirs\": {}}, \"Projects\": {\"count\": 47, \"subdirs\": {\"我的知识库\": 15, \"Metool在线工具本地化\": 12, \"工艺生产报警优化管理系统\": 8, \"云南驰宏资源综合利用有限公司\": 4, \"OpcDa2ModbusGateway\": 2, \"OpcDaToUaGateway\": 2}}, \"Logs\": {\"count\": 23, \"subdirs\": {}}, \"Template\": {\"count\": 8, \"subdirs\": {}}}, \"notes_breakdown\": {\"Inbox\": {\"AI与Agent\": 1, \"PM与职场\": 1, \"工业自动化\": 1, \"系统与软件\": 1, \"网络与硬件\": 1}, \"Notes\": {\"SCADA_FAQ\": 300, \"IO_FAQ\": 193, \"华康网关_FAQ\": 67, \"系统与软件\": 53, \"工业自动化\": 48, \"pSpace_FAQ\": 46, \"PM与职场\": 42, \"FWebView_FAQ\": 36, \"AI与Agent\": 32, \"网络与硬件\": 24, \"pSpace_手册\": 22, \"eForceCon_手册\": 13, \"pSpace_linux_手册\": 12, \"华康网关_手册\": 9, \"ForceControl_手册\": 5, \"Other_FAQ\": 5, \"FinforWorx_手册\": 3, \"ForceSCADA_手册\": 2}, \"Ideas\": {}, \"wiki\": {}, \"Projects\": {\"我的知识库\": 15, \"Metool在线工具本地化\": 12, \"工艺生产报警优化管理系统\": 8, \"云南驰宏资源综合利用有限公司\": 4, \"OpcDa2ModbusGateway\": 2, \"OpcDaToUaGateway\": 2}, \"Logs\": {}, \"Template\": {}}, \"wiki_tags\": {\"by_category\": {\"力控产品\": 47, \"数据库\": 20, \"网络协议\": 19, \"工业通信\": 12, \"软件技术\": 10, \"AI技术\": 10, \"力控概念\": 7, \"通用技术\": 6, \"PLC\": 4, \"编程语言\": 4, \"力控产品组件\": 4, \"软件工具\": 4, \"软件开发\": 3, \"数据格式\": 3, \"开发工具\": 3, \"前端技术\": 3, \"PLC品牌\": 3, \"网络安全\": 3, \"操作系统\": 3, \"软件架构\": 2, \"网络架构\": 2, \"网络设备\": 2, \"力控工具\": 2, \"安全授权\": 2, \"项目管理\": 2, \"配置文件\": 1, \"工业软件组件\": 1, \"网络基础\": 1, \"数据库接口\": 1, \"硬件/安全\": 1, \"PM与职场\": 1, \"运维工具\": 1, \"计算机基础\": 1, \"授权/加密\": 1, \"PLC通信\": 1, \"故障排查\": 1}, \"tag_freq\": {}}, \"wiki_files_list\": [\".NET\", \"4G\", \"5G\", \"AB\", \"Access\", \"ActiveX\", \"Agent\", \"AI\", \"API\", \"APP\", \"B-S\", \"Basic\", \"BS架构\", \"C-S\", \"CDT\", \"Claude\", \"Codex\", \"COM\", \"CommServer\", \"config.ini\", \"CSV\", \"CS架构\", \"DB\", \"DBServer\", \"DCOM\", \"DCS\", \"DDE\", \"DNAT\", \"DNP3\", \"DolphinDB\", \"DSN\", \"DTU\", \"EF\", \"eForceCon\", \"ERP\", \"ES\", \"ET\", \"Excel\", \"FC\", \"FC7\", \"FCloudComm\", \"Fcyber\", \"FinforWorx\", \"Flash\", \"ForceControl V7\", \"ForceControl\", \"ForceSCADA\", \"FSmartWorx\", \"FTP\", \"FWebView\", \"GE\", \"GIF\", \"Git\", \"GitHub\", \"GPRS\", \"H5\", \"HC-ISG\", \"HDA\", \"HDB\", \"Hermes Agent\", \"HTML\", \"HTML5\", \"HTTP\", \"Httpsvr\", \"IE\", \"IEC101\", \"IEC104\", \"IIS\", \"InfluxDB\", \"Internet\", \"IOClient\", \"IOConfig\", \"IOFileServer\", \"IoMonitor\", \"IOServer\", \"IoTDB\", \"IP 地址\", \"IP\", \"JDBC\", \"JSON\", \"Linux\", \"LKT\", \"MAC\", \"Markdown\", \"MES\", \"Modbus\", \"MQTT\", \"MySQL\", \"NetServer\", \"Obsidian\", \"ODBC\", \"ODBCRouter\", \"OLE\", \"OPC Server\", \"OPC UA Server\", \"OPC UA\", \"OPC\", \"OpcEnum\", \"OPCServer\", \"OPCUAServer\", \"Oracle\", \"PI System\", \"PID控制\", \"ping\", \"PLC\", \"PostgreSQL\", \"Prometheus\", \"Prompt\", \"pSafetyLink\", \"psConfig\", \"psMonitor\", \"psNTService\", \"pSpace Admin\", \"pSpace SDK\", \"pSpace Server\", \"pSpace-Linux\", \"pSpace\", \"psSimulator\", \"psView\", \"psWebAdmin\", \"Python\", \"RAG\", \"ReAct\", \"Redis\", \"RTU\", \"S7-200\", \"SCADA\", \"SDK\", \"Skills\", \"SNAT\", \"SNMP\", \"SQL Server\", \"SQL\", \"SQLRouter\", \"SSH\", \"SSL\", \"TCP\", \"TCP_IP\", \"TDengine\", \"TimescaleDB\", \"Token\", \"UAServer\", \"UDP\", \"Ukey\", \"Unix\", \"URL\", \"VB\", \"VC++\", \"View\", \"VLAN\", \"VNC\", \"VPN\", \"Web\", \"WebAPI\", \"Win7\", \"Windows\", \"XML\", \"三菱\", \"关系数据库\", \"力控\", \"加密锁\", \"北京力控元通科技有限公司\", \"变更管理\", \"备份工具\", \"工业自动化\", \"工艺报警\", \"报警\", \"报警优先级\", \"报警审定\", \"报警策略\", \"报警管理\", \"报警系统\", \"故障排查\", \"数据下置\", \"数据库\", \"数据显示\", \"数据采集\", \"时序数据库\", \"松下\", \"浮点数\", \"海康\", \"深思软锁\", \"电力规约\", \"硬锁\", \"组态软件\", \"网关运维\", \"西门子S7\", \"连接故障\", \"闪退\", \"项目管理\", \"项目经理\"], \"top_wikilinks\": [{\"name\": \"pSpace\", \"count\": 1797}, {\"name\": \"力控\", \"count\": 710}, {\"name\": \"北京力控元通科技有限公司\", \"count\": 625}, {\"name\": \"EF\", \"count\": 440}, {\"name\": \"Windows\", \"count\": 342}, {\"name\": \"FC\", \"count\": 339}, {\"name\": \"OPC\", \"count\": 325}, {\"name\": \"ForceControl\", \"count\": 228}, {\"name\": \"ODBC\", \"count\": 225}, {\"name\": \"pSpace Server\", \"count\": 221}, {\"name\": \"FWebView\", \"count\": 176}, {\"name\": \"DB\", \"count\": 156}, {\"name\": \"IOServer\", \"count\": 134}, {\"name\": \"SQL\", \"count\": 127}, {\"name\": \"View\", \"count\": 125}, {\"name\": \"Modbus\", \"count\": 124}, {\"name\": \"IOConfig\", \"count\": 119}, {\"name\": \"IP\", \"count\": 118}, {\"name\": \"eForceCon\", \"count\": 116}, {\"name\": \"IE\", \"count\": 114}, {\"name\": \"SCADA\", \"count\": 113}, {\"name\": \"URL\", \"count\": 105}, {\"name\": \"ODBCRouter\", \"count\": 99}, {\"name\": \"API\", \"count\": 94}, {\"name\": \"PLC\", \"count\": 93}, {\"name\": \"OPC Server\", \"count\": 93}, {\"name\": \"Linux\", \"count\": 87}, {\"name\": \"H5\", \"count\": 84}, {\"name\": \"IOMonitor\", \"count\": 81}, {\"name\": \"IEC104\", \"count\": 78}, {\"name\": \"MySQL\", \"count\": 77}, {\"name\": \"FC7\", \"count\": 75}, {\"name\": \"Git\", \"count\": 72}, {\"name\": \"Excel\", \"count\": 71}, {\"name\": \"OPC UA\", \"count\": 70}, {\"name\": \"psConfig\", \"count\": 69}, {\"name\": \"pSpace SDK\", \"count\": 68}, {\"name\": \"psMonitor\", \"count\": 67}, {\"name\": \"IoMonitor\", \"count\": 65}, {\"name\": \"JSON\", \"count\": 62}], \"top_tags\": [{\"name\": \"0e1116\", \"count\": 36}, {\"name\": \"fff\", \"count\": 36}, {\"name\": \"DateTime\", \"count\": 12}, {\"name\": \"Report\", \"count\": 10}, {\"name\": \"0f172a\", \"count\": 9}, {\"name\": \"1f6feb\", \"count\": 9}, {\"name\": \"2f9e6e\", \"count\": 9}, {\"name\": \"e8590c\", \"count\": 9}, {\"name\": \"b08d57\", \"count\": 9}, {\"name\": \"测试\", \"count\": 9}, {\"name\": \"SuperCurve\", \"count\": 8}, {\"name\": \"DateTime1\", \"count\": 7}, {\"name\": \"xff0c\", \"count\": 7}, {\"name\": \"f1f5f9\", \"count\": 6}, {\"name\": \"64748b\", \"count\": 6}, {\"name\": \"94a3b8\", \"count\": 6}, {\"name\": \"dc2626\", \"count\": 6}, {\"name\": \"16a34a\", \"count\": 6}, {\"name\": \"39\", \"count\": 6}, {\"name\": \"sys_date\", \"count\": 4}, {\"name\": \"uuid\", \"count\": 4}, {\"name\": \"RouterCtrl\", \"count\": 4}, {\"name\": \"TextControl\", \"count\": 4}, {\"name\": \"TextControl1\", \"count\": 4}, {\"name\": \"pRecipe\", \"count\": 4}, {\"name\": \"18-33\", \"count\": 3}, {\"name\": \"34-49\", \"count\": 3}, {\"name\": \"f8fafc\", \"count\": 3}, {\"name\": \"ffffff\", \"count\": 3}, {\"name\": \"1e293b\", \"count\": 3}, {\"name\": \"cbd5e1\", \"count\": 3}, {\"name\": \"334155\", \"count\": 3}, {\"name\": \"7c3aed\", \"count\": 3}, {\"name\": \"a78bfa\", \"count\": 3}, {\"name\": \"4ade80\", \"count\": 3}, {\"name\": \"2563eb\", \"count\": 3}, {\"name\": \"60a5fa\", \"count\": 3}, {\"name\": \"f87171\", \"count\": 3}, {\"name\": \"output\", \"count\": 3}, {\"name\": \"Data\", \"count\": 3}], \"inbox_backlog\": [{\"file\": \"Inbox\\\\.索引.md\", \"date\": \"2026-07-29\", \"title\": \"Inbox 索引\"}, {\"file\": \"Inbox\\\\AI与Agent\\\\.索引.md\", \"date\": \"2026-07-29\", \"title\": \"AI与Agent索引\"}, {\"file\": \"Inbox\\\\PM与职场\\\\.索引.md\", \"date\": \"2026-07-29\", \"title\": \"PM与职场索引\"}, {\"file\": \"Inbox\\\\工业自动化\\\\.索引.md\", \"date\": \"2026-07-29\", \"title\": \"工业自动化索引\"}, {\"file\": \"Inbox\\\\系统与软件\\\\.索引.md\", \"date\": \"2026-07-29\", \"title\": \"系统与软件索引\"}, {\"file\": \"Inbox\\\\网络与硬件\\\\.索引.md\", \"date\": \"2026-07-29\", \"title\": \"网络与硬件索引\"}], \"recent_logs\": [{\"file\": \"操作日志_2026_07_29.md\", \"preview\": \"title: 操作日志 2026-07-29\\ndate: 2026-07-29\\ntags:\\n  - 操作日志\\n  - 知识采集\\n  - 2026年7月\\n**执行时间**：2026-07-29 (北京时间)\\n**采集概况**：通过WebSearch和WebFetch从CSDN、搜狐网、人人文库等技术平台采集15篇高质量内容，按领域分类存储至Inbox目录。本次为补充性深度采集，获取更详细的专业技术文章。\"}, {\"file\": \"操作日志_2026_07_28.md\", \"preview\": \"title: 操作日志 2026-07-28\\ndate: 2026-07-28\\ntags:\\n  - 操作日志\\n  - 知识采集\\n  - 2026年7月\\n**执行时间**：2026-07-28 (北京时间)\\n**采集概况**：从5大领域采集15篇高质量内容，写入Inbox根目录。\"}, {\"file\": \"操作日志_2026_07_27.md\", \"preview\": \"**执行时间**：2026-07-27 00:00 (北京时间)\\n**采集概况**：从5大领域采集13篇高质量内容，写入Inbox对应子目录。\\n| 领域 | 篇数 | 文章标题 | 来源平台 |\\n|---|---|---|---|\\n| 工业自动化 | 3 | SCADA系统Web化技术演进 / 国产水务SCADA系统品牌实测 / 制造业数据采集技术指南 | 今日头条/搜狐 |\\n| 网络与硬件 | 3 | 工业以太网交换机全千兆组网 / 华为光网络接入设备专利 / 智能工业网关厂商深度剖析 | 搜狐/网易/中华网 |\\n| 系统与软件 | 3 | Linux运维六个典型问题排查 / Linux运维\"}, {\"file\": \"操作日志_2026_07_26.md\", \"preview\": \"title: 操作日志 2026-07-26\\ndate: 2026-07-26\\ntags:\\n  - 操作日志\\n  - 知识采集\\nsource: 内部\\nstatus: 定稿\\n**执行时间**：2026-07-26 18:00-19:30（北京时间）\"}, {\"file\": \"操作日志_2026_07_25.md\", \"preview\": \"title: 操作日志 2026-07-25\\ndate: 2026-07-25\\ntags:\\n  - 操作日志\\nsource: 原创\\nstatus: 定稿\\n在 `D:\\\\Documents\\\\Obsidian Vault\\\\wiki` 目录下创建 6 个 wiki 词条文件，基于双链频率统计筛选（双链 >= 18 次且尚无 wiki 的力控系/时序数据库相关术语）：\\n| 序号 | 文件名 | 词条 | 行数 | 主要双链指向 |\"}, {\"file\": \"操作日志_2026_07_24.md\", \"preview\": \"**操作时间**：2026-07-24 （北京时间）\\n**操作类型**：知识采集\\n**采集渠道**：CSDN博客、今日头条、搜狐网、51CTO博客、网易新闻\\n**采集数量**：15篇（5个领域各3篇）\\n1. `Modbus通讯技术深度解析：从协议本质到工业落地` — 来源：CSDN博客 / 作者：满满的好奇\\n2. `工业网关设计：如何高效桥接Modbus与OPC UA实现数据互通` — 来源：CSDN博客 / 作者：威哥说编程\\n3. `2026工控行业爆发，自研.NET上位机逐步替代商用组态软件` — 来源：今日头条\\n4. `工业设备组网实战：EtherCAT转Profinet网关配置全流程`\"}, {\"file\": \"操作日志_2026_07_23.md\", \"preview\": \"> 执行时间：2026-07-23 08:50（北京时间 UTC+8）\\n> 任务：每日多渠道知识采集（自动化 automation-1784375574459）\\n> 采集总量：15 篇（5 大领域 × 3 篇），落库 `Inbox/` 对应子目录，文件名前缀 `20260723_`\\n| 序号 | 笔记文件 | 文章标题 | 来源平台 |\\n|------|----------|----------|----------|\\n| 1 | 20260723_开源工业数采工具SnetIotDaq.md | 开源工业数采工具：插件热插拔、OPC UA/MQTT内置、开箱即用 | 微信公众号（物联网星球） \"}, {\"file\": \"操作日志_2026_07_22.md\", \"preview\": \"> 执行时间：2026-07-22 08:50（北京时间）\\n> 任务：每日多渠道知识采集（自动化 automation-1784375574459）\\n> 采集规则：优先微信/小红书，扩展知乎/CSDN/掘金等；优先近 24h，不足扩至近 7 天；不足不凑数\\n> 本次结果：采集 15 篇（5 领域 × 3 篇），存放 `Inbox/`（文件名前缀 `20260722_`），每篇含完整 YAML frontmatter（status: 待归档）+ 清洗正文 + 结构化模块（核心金句/内容摘要/知识要点/个人批注预留区）\\n1. MQTT协议结合工业PLC的数据采集 — 微信公众号（独数易智）— 20\"}, {\"file\": \"操作日志_2026_07_21.md\", \"preview\": \"采集 15 篇（5 领域 × 3 篇），存放于 `Inbox/`（文件名前缀 `20260721_`）。每篇含完整 YAML frontmatter（含 `status: 待归档`，遵循 Inbox 素材 KB 合规标准）+ 清洗后正文 + 结构化模块（核心金句 / 内容摘要 / 知识要点 / 个人批注预留区）；正文首次出现的关键术语已生成双链（如 [[OPC UA]]、[[TSN]]、[[SCADA]]、[[Modbus]]、[[Agent]]、[[LLM]]）。\\n| 领域 | 文章标题 | 来源平台 | 原文日期 |\\n|------|----------|----------|------\"}, {\"file\": \"操作日志_2026_07_20.md\", \"preview\": \"> 本日志记录知识库自动化操作，时间戳为 agent 实际操作的北京时间（UTC+8）。\\n**操作类型**：每日多渠道知识采集（15 篇，5 领域 × 3 篇）\\n**时间窗口**：优先最近 24h~7 天（2026-07-07 ~ 2026-07-20）\\n**存储位置**：`Inbox/` 下 5 个分类子目录，文件名 `YYYYMMDD_主题关键词.md`\\n**说明**：小红书 / 微信公众号受反爬限制未直接抓取，改用可访问的聚合/行业站点并如实标注 `source`；正文内容取自搜索摘要与可访问页面，原文 URL 已记录于各笔记 `source_url`。\\n| 时间(北京时间) | 文章标\"}, {\"file\": \"操作日志_2026_07_19.md\", \"preview\": \"**采集渠道**：Web 搜索 + Web 抓取。任务要求优先小红书、微信公众号；受平台反爬限制，实际可稳定抓取的来源为腾讯新闻、语雀、CSDN、今日头条、CBC 金属网、程序员茄子博客、Last9、FunWithLinux、findarepo、GitHub Topics、人人都是产品经理、致远互联等，均已作为 `source` 字段如实记录。\\n**时间范围**：优先最近 24h–7 天（2026-07-11 至 2026-07-19）；个别来源发布日期更早，已在对应笔记 frontmatter 的 `date` 中如实标注，未做凑数。\\n**采集结果**：共 15 篇，按 5 大领域各 3 篇\"}, {\"file\": \"操作日志_2026_07_18.md\", \"preview\": \"title:\\ndate:\\ntype:\\ntags:\\n  - 日志\\n  - 操作记录\\ncategory:\\ndescription:\"}, {\"file\": \"操作日志_2026_07_17.md\", \"preview\": \"title:\\ndate:\\ntype:\\ntags:\\n  - 操作日志\\nstatus: 定稿\\n**操作人**: Agent\\n**操作类型**: 批量维护\"}, {\"file\": \"操作日志_2026_07_16.md\", \"preview\": \"title:\\ndate:\\ntype:\\ntags:\\n  - 操作日志\\n关系图谱:\\nstatus: 定稿\\n**操作时间**：2026-07-16 19:32\"}], \"recent_briefs\": [{\"file\": \"认知简报_2026-07-29.md\", \"title\": \"认知简报 2026-07-29\", \"date\": \"2026-07-29\", \"preview\": \"---\\ntitle: 认知简报 2026-07-29\\ndate: 2026-07-29\\ntags:\\n  - 认知简报\\n  - 知识库管理\\n  - 结构体检\\n  - 建词\\nsource: 原创思考\\nstatus: 定稿\\n---\\n\\n# 认知简报 2026-07-29（结构体检 + 建词专刊 · 终版）\\n\\n> 触发方式：日更认知简报自动化（全面结构体检模式）。执行时段：20:31-21:00（北京时间）。\\n\\n## 一、结构健康度\\n\\n| 维度 | 状态 | 说明 |\\n|------|------|------|\\n| frontmatter 合规率 | ✅ 891/891（100%） | 含 YAML 块完整性 + CRLF 兼容校验；仅修 1 处（Agent框架五强对比.md 补 `status: 待归档`） |\\n| 根目录规范 | ✅ 正常 | 仅 7 核心目录 + AGENTS.md + 3 \"}, {\"file\": \"认知简报_2026-07-28.md\", \"title\": \"认知简报_2026-07-28\", \"date\": \"2026-07-28\", \"preview\": \"---\\ntitle: 认知简报_2026-07-28\\ndate: 2026-07-28\\ntags:\\n  - 认知简报\\n  - 知识管理\\n  - 结构体检\\nsource: 原创思考\\nstatus: 定稿\\n---\\n\\n# 认知简报 2026-07-28（全面结构体检专刊）\\n\\n> 本期由「知识库全面结构体检」任务生成，覆盖 frontmatter 合规、索引一致性、清单重算、Inbox 治理与 AGENTS.md 运行状态五个维度。\\n\\n## 一、结构健康度\\n\\n| 维度 | 状态 | 数据 |\\n|------|------|------|\\n| 根目录结构 | ✅ 合规 | 7 个核心目录 + AGENTS.md，无异常一级目录（desktop.ini 为系统文件，可忽略） |\\n| Frontmatter 合规率 | ✅ 100% | Inbox/Notes 共 892 篇，修复 41 处后零缺陷 |\"}, {\"file\": \"认知简报_2026-07-27.md\", \"title\": \"认知简报 2026-07-27\", \"date\": \"2026-07-27\", \"preview\": \"---\\ntitle: 认知简报 2026-07-27\\ndate: 2026-07-27\\ntype: 认知简报\\ncategory: Ideas\\ntags:\\n  - 认知简报\\n  - 知识库体检\\n  - 结构修复\\nsource: 内网笔记\\nstatus: 定稿\\n---\\n\\n# 认知简报 2026-07-27\\n\\n> **生成时间**: 2026-07-27  \\n> **知识库版本**: 全面结构体检后  \\n> **与上次对比**: 2026-07-26\\n\\n---\\n\\n## 结构健康度\\n\\n| 维度 | 当前值 | 上次值 | 变化 |\\n|------|--------|--------|------|\\n| Notes 内容文件 | 875 篇 | 875 篇 | 0 |\\n| Inbox 待归档 | 14 篇 | 0 篇 | +14（实际存量，之前索引虚高） |\\n| wiki 词条 | 178 个 | \"}, {\"file\": \"认知简报_2026-07-26.md\", \"title\": \"认知简报_2026-07-26\", \"date\": \"2026-07-26\", \"preview\": \"---\\ntitle: 认知简报_2026-07-26\\ndate: 2026-07-26\\ntype: 认知简报\\ncategory: Ideas\\ntags:\\n  - 认知简报\\n  - 知识库体检\\n  - 周复盘\\nsource: 内网笔记\\nstatus: 定稿\\n---\\n\\n# 认知简报_2026-07-26\\n\\n> **生成时间**: 2026-07-26  \\n> **知识库版本**: 07-23 批量导入后  \\n> **与上次对比**: 2026-07-25\\n\\n---\\n\\n## 结构健康度\\n\\n| 维度 | 当前值 | 上次值 | 变化 |\\n|------|--------|--------|------|\\n| Notes 内容文件 | 875 篇 | 875 篇 | 0 |\\n| Inbox 待归档 | 0 篇 | 19 篇 | -19（已清空幽灵索引） |\\n| 标签总数 | 860 个 | 899 \"}, {\"file\": \"认知简报_2026-07-25.md\", \"title\": \"认知简报 2026-07-25\", \"date\": \"2026-07-25\", \"preview\": \"---\\ntitle: 认知简报 2026-07-25\\ndate: 2026-07-25\\ntags:\\n  - 认知简报\\n  - 知识库健康\\nsource: 原创\\nstatus: 定稿\\n---\\n\\n# 认知简报 2026-07-25\\n\\n## 结构健康度\\n\\n| 指标 | 当前值 | 上次值(07-24) | 变化 |\\n|------|--------|---------------|------|\\n| 核心目录 | 7个 + 1异常 | 7个 | `整理/`幽灵目录待清理 |\\n| Notes 总量 | 875 篇 | 869 篇 | +6 |\\n| Inbox 待归档 | 0 篇 | 18 篇 | -18（已归档至Notes） |\\n| wiki 词条 | 58 个 | 52 个 | +6（今日批次建词） |\\n| Ideas 认知简报 | 25 篇 | 24 篇 | +1（本篇） |\\n| 标签种类 |\"}, {\"file\": \"认知简报_2026-07-24.md\", \"title\": \"认知简报 2026-07-24\", \"date\": \"2026-07-24\", \"preview\": \"---\\n\\ntitle: 认知简报 2026-07-24\\n\\ndate: 2026-07-24\\n\\ntags:\\n\\n  - 认知简报\\n\\n  - 知识库健康\\n\\n  - 知识管理\\n\\n  - 结构体检\\n\\nsource: 原创思考\\n\\nstatus: 定稿\\n\\n---\\n\\n# 认知简报 2026-07-24\\n\\n> 综合健康度评分 **95/100**：本次全库结构大体检完成五项核心任务——Frontmatter 规范化、索引回环校验、双清单重算、Inbox 格式化、归档链路排查。最大发现是 `source` 字段长期缺失率高达 82.2%（714/869），已于本次批量补齐。索引体系修复 26 处失配（Inbox 17 条幽灵条目 + Notes 24 篇遗漏）。知识库从\\\"能用\\\"跃升至\\\"规范可用\\\"。\\n\\n---\\n\\n## 一、知识库结构健康度\\n\\n### 1.1 目录完整性\\n\\n| 目录 | 状态 | .md 文件数 \"}, {\"file\": \"认知简报_2026-07-23.md\", \"title\": \"认知简报 2026-07-23\", \"date\": \"2026-07-23\", \"preview\": \"---\\n\\ntitle: 认知简报 2026-07-23\\n\\ndate: 2026-07-23\\n\\ntags:\\n\\n  - 认知简报\\n\\n  - 知识库健康\\n\\n  - 知识管理\\n\\nsource: 原创思考\\n\\nstatus: 定稿\\n\\n---\\n\\n# 认知简报 2026-07-23\\n\\n> 综合健康度评分 **92/100**：Frontmatter 可写区 100% 合规、索引 25/25 回环零失配、清单口径完成一次重要修正（剔除自引用通胀）。今日最大输入事件是 **17 篇电力规约/Modbus/MQTT 系列标准文档**入仓（docx/pdf 转换），工业自动化方向出现建库以来最集中的一次「标准文献」补强。残余风险仍是只读区 U+00A0（4 文件）与死链常态保留，均不阻断。\\n\\n---\\n\\n## 一、知识库结构健康度检查\\n\\n### 1.1 目录完整性\\n\\n| 目录 | 状态 | 文件数（.md） | 较\"}], \"recent_reviews\": [{\"file\": \"周复盘_2026-07-25.md\", \"preview\": \"---\\n\\ntitle: 周复盘 2026-07-25\\n\\ndate: 2026-07-25\\n\\ntags:\\n\\n  - 周复盘\\n\\nsource: 原创思考\\n\\nstatus: 定稿\\n\\n---\\n\\n# 周复盘 2026-07-25\\n\\n> 本周知识库进入了\\\"低维护成本稳态\\\"——从 07-19 的 760 篇批量修复断崖下降到日均 5-25 篇，健康度从 82 攀升至 92。最大的结构性变化是**输入模式升级**：从\\\"资讯采集\\\"演进为\\\"标准文献建库\\\"（17 篇电力规约/Modbus/MQTT 原文入仓），知识底座从\\\"故障经验+产品手册\\\"延展至\\\"协议标准\\\"。认知层面出现一个关键转折信号：Agent 自动化治理已\"}, {\"file\": \"周复盘_2026-07-18.md\", \"preview\": \"---\\n\\ntitle: 周复盘 2026-07-18\\n\\ndate: 2026-07-18\\n\\ntags:\\n\\n  - 周复盘\\n\\nsource: 原创思考\\n\\nstatus: 定稿\\n\\n---\\n\\n# 周复盘 2026-07-18\\n\\n> 本周知识库经历了一次「术语化跃迁」——力控产品体系完成 52 条 wiki 词条闭环（含本周新增 18 条高频术语），同时涌入 100+ 篇 Notes 与 15 篇 Inbox 原始素材。从认知层面看，你已从「学 Agent 工具」走到「用 Agent 治理知识库」并跑通自动化，角色正滑向「AI 系统构建者 + 知识库操盘手」。但一个老问题再次出现：研究产出（TOP10\"}, {\"file\": \"周复盘_2026-07-11.md\", \"preview\": \"---\\n\\ntitle: 周复盘 2026-07-11\\n\\ndate: 2026-07-11\\n\\ntags:\\n\\n  - 周复盘\\n\\nsource: 原创思考\\n\\nstatus: 定稿\\n\\n---\\n\\n# 周复盘 2026-07-11\\n\\n> 本周知识库经历了一次「大消化」——Inbox 从上周的 37 篇高峰降至 14 篇（-59%），三个子分类全部清空，Notes 知识文章从 40 篇跃升至 67 篇。与此同时，[[项目管理]]方法论和 Agent 实战体系同步形成闭环，产出了一篇原创方法论提炼和连续 6 天的认知简报。这是知识库从「囤积阶段」迈向「消化阶段」的第一个完整周。\\n\\n---\\n\\n## 一、本周知识\"}, {\"file\": \"周复盘_2026-07-03.md\", \"preview\": \"---\\n\\ntitle: 周复盘 2026-07-03\\n\\ndate: 2026-07-03\\n\\ntags:\\n\\n  - 周复盘\\n\\nsource: 原创思考\\n\\nstatus: 定稿\\n\\n---\\n\\n# 周复盘 2026-07-03\\n\\n> 本周知识库从「快速扩张」进入「结构定型」，自动化同步、项目开发、方法论输入三股力量同时发力，但「消化率」仍是最大瓶颈。\\n\\n---\\n\\n## 一、本周知识输入\\n\\n### 1.1 Inbox 新增：26 篇，5 个子目录\\n\\n| 子目录 | 数量 | 核心主题 |\\n|--------|------|----------|\\n| [[项目管理]] | 12 | PM 能力模型、向上管\"}], \"ideas_summary\": [{\"file\": \"认知简报_2026-07-29.md\", \"size\": 3233}, {\"file\": \"认知简报_2026-07-28.md\", \"size\": 2245}, {\"file\": \"认知简报_2026-07-27.md\", \"size\": 3899}, {\"file\": \"认知简报_2026-07-26.md\", \"size\": 3079}, {\"file\": \"认知简报_2026-07-25.md\", \"size\": 2386}, {\"file\": \"认知简报_2026-07-24.md\", \"size\": 6331}, {\"file\": \"认知简报_2026-07-23.md\", \"size\": 5657}, {\"file\": \"认知简报_2026-07-22.md\", \"size\": 5843}, {\"file\": \"认知简报_2026-07-21.md\", \"size\": 4774}, {\"file\": \"认知简报_2026-07-20.md\", \"size\": 4740}], \"structural_issues\": [\"根目录异常目录: .workbuddy\", \"操作日志命名冲突（连字符）: 操作日志_2026-07-30.md\", \"死链风险: 高频双链中约 11 条找不到对应 .md 文件\"], \"archive_candidates\": [\".workbuddy\"]}";
+
+function initCharts(data) {
+  const s = data.summary;
+  document.getElementById('updateTime').textContent = '更新于 ' + data.generated_at;
+  renderKPI(data);
+  renderNotesDistChart(data);
+  renderWikiCatChart(data);
+  renderTopLinksChart(data);
+  renderBriefsChart(data);
+  renderWikiTopList(data);
+  renderIssues(data);
+  renderLogs(data);
+  renderInbox(data);
+  renderLearnTrack(data);
+  renderAdvise(data);
+  document.getElementById('footerNote').textContent = '知识库看板 · ' + s.total_md + ' 篇笔记 · ' + s.wiki_count + ' 个词条 · 数据更新 ' + data.generated_at;
+}
+
+try {
+  initCharts(JSON.parse(KB_DATA));
+} catch(e) {
+  document.querySelector('.dashboard').innerHTML = `<div class="empty-state" style="padding:60px"><p style="font-size:16px;margin-bottom:12px">⚠️ 数据解析失败</p><p>${e.message}</p></div>`;
+}
+if (typeof echarts === 'undefined') document.title += ' (ECharts 加载中)';
+
+function renderKPI(d) {
+  const s = d.summary;
+  const items = [
+    { label:'总笔记数', value:s.total_md, accent:'green', sub:'含 7 大核心目录' },
+    { label:'Notes', value:s.dir_counts.Notes||0, accent:'blue', sub:(d.notes_breakdown.Notes?Object.keys(d.notes_breakdown.Notes).length:0)+' 个子目录' },
+    { label:'wiki 词条', value:s.wiki_count, accent:'purple', sub:(d.wiki_tags.by_category?Object.keys(d.wiki_tags.by_category).length:0)+' 个分类' },
+    { label:'Ideas', value:s.dir_counts.Ideas||0, accent:'teal', sub:'原创思考与认知简报' },
+    { label:'Inbox', value:s.inbox_count, accent:'amber', sub:'待归档素材' },
+    { label:'结构问题', value:d.structural_issues.length, accent:'coral', sub:'需关注' },
+  ];
+  document.getElementById('kpiGrid').innerHTML = items.map(item => `
+    <div class="kpi-card"><div class="kpi-accent ${item.accent}"></div>
+      <div class="kpi-label">${item.label}</div>
+      <div class="kpi-value">${item.value}</div>
+      <div class="kpi-sub">${item.sub}</div>
+    </div>`).join('');
+}
+
+function renderNotesDistChart(d) {
+  if (!echarts) return;
+  const chart = echarts.init(document.getElementById('chartNotesDist'));
+  const nb = d.notes_breakdown.Notes||{};
+  const names = Object.keys(nb), vals = Object.values(nb);
+  const colors = ['#32F08C','#387BFF','#B655FC','#78F2F2','#F87454','#EDAA45','#1DC981','#22A5F7','#FB9DD7','#B6A3FF','#A6EA39','#859EAD'];
+  chart.setOption({
+    tooltip:{trigger:'item',backgroundColor:'#1A1B1D',borderColor:'rgba(224,226,242,0.16)',textStyle:{color:'#D1D3DB',fontSize:11}},
+    series:[{type:'pie',radius:['28%','62%'],center:['50%','55%'],data:names.slice(0,12).map((n,i)=>({value:vals[i],name:n,itemStyle:{color:colors[i%colors.length]}})),label:{color:'#9599A6',fontSize:9,formatter:'{b}'},labelLine:{lineStyle:{color:'rgba(224,226,242,0.12)'}},emphasis:{itemStyle:{shadowBlur:10,shadowColor:'rgba(50,240,140,0.3)'}}}]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+function renderWikiCatChart(d) {
+  if (!echarts) return;
+  const chart = echarts.init(document.getElementById('chartWikiCat'));
+  const bc = d.wiki_tags.by_category||{};
+  const names = Object.keys(bc), vals = Object.values(bc);
+  const colors = ['#32F08C','#387BFF','#1DC981','#22A5F7','#B655FC','#EDAA45','#F87454','#A6EA39','#859EAD'];
+  chart.setOption({
+    tooltip:{trigger:'axis',backgroundColor:'#1A1B1D',borderColor:'rgba(224,226,242,0.16)',textStyle:{color:'#D1D3DB',fontSize:11},axisPointer:{type:'shadow'}},
+    grid:{left:60,right:8,top:4,bottom:16},
+    xAxis:{type:'value',axisLabel:{color:'#666B75',fontSize:9},splitLine:{lineStyle:{color:'rgba(224,226,242,0.06)'}}},
+    yAxis:{type:'category',data:names.slice(0,15).reverse(),axisLabel:{color:'#9599A6',fontSize:9},axisLine:{show:false},axisTick:{show:false}},
+    series:[{type:'bar',data:vals.slice(0,15).reverse().map((v,i)=>({value:v,itemStyle:{color:colors[i%colors.length]}})),barWidth:10,barMinHeight:3}]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+function renderTopLinksChart(d) {
+  if (!echarts) return;
+  const chart = echarts.init(document.getElementById('chartTopLinks'));
+  const top = (d.top_wikilinks||[]).slice(0,20);
+  const names = top.map(x=>x.name).reverse();
+  const vals = top.map(x=>x.count).reverse();
+  chart.setOption({
+    tooltip:{trigger:'axis',backgroundColor:'#1A1B1D',borderColor:'rgba(224,226,242,0.16)',textStyle:{color:'#D1D3DB',fontSize:11},axisPointer:{type:'shadow'}},
+    grid:{left:60,right:12,top:4,bottom:16},
+    xAxis:{type:'value',axisLabel:{color:'#666B75',fontSize:9},splitLine:{lineStyle:{color:'rgba(224,226,242,0.06)'}}},
+    yAxis:{type:'category',data:names,axisLabel:{color:'#9599A6',fontSize:9},axisLine:{show:false},axisTick:{show:false}},
+    series:[{type:'bar',data:vals.map(v=>({value:v,itemStyle:{color:v>500?'#32F08C':v>200?'#387BFF':'#1DC981'}})),barWidth:8,barMinHeight:3}]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+function renderBriefsChart(d) {
+  if (!echarts) return;
+  const chart = echarts.init(document.getElementById('chartBriefs'));
+  const recent = (d.ideas_summary||[]).slice(0,14).reverse();
+  const labels = recent.map(x=>x.file.replace(/^认知简报_|^|\.md$/g,'').slice(0,10));
+  const sizes = recent.map(x=>Math.round(x.size/100)*100||0);
+  const has = sizes.some(s=>s>0);
+  chart.setOption({
+    tooltip:{trigger:'axis',backgroundColor:'#1A1B1D',borderColor:'rgba(224,226,242,0.16)',textStyle:{color:'#D1D3DB',fontSize:9}},
+    grid:{left:8,right:8,top:16,bottom:32},
+    xAxis:{type:'category',data:has?labels:['暂无数据'],axisLabel:{color:'#666B75',fontSize:8,rotate:45},axisLine:{lineStyle:{color:'rgba(224,226,242,0.1)'}}},
+    yAxis:{type:'value',axisLabel:{color:'#666B75',fontSize:8},splitLine:{lineStyle:{color:'rgba(224,226,242,0.06)'}},show:has},
+    series:[{type:'line',data:has?sizes:[0],smooth:true,symbol:'circle',symbolSize:6,lineStyle:{color:'#32F08C',width:2},areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(50,240,140,0.3)'},{offset:1,color:'rgba(50,240,140,0)'}]}},itemStyle:{color:'#32F08C'}}]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+function renderWikiTopList(d) {
+  const top = (d.top_wikilinks||[]).slice(0,10);
+  document.getElementById('wikiTopList').innerHTML = top.map(x=>`<span class="wiki-tag">${x.name} <span class="freq">${x.count}</span></span>`).join('')||'<div class="empty-state">暂无数据</div>';
+}
+
+function renderIssues(d) {
+  const issues = d.structural_issues||[];
+  document.getElementById('issueCount').textContent = issues.length;
+  document.getElementById('issueList').innerHTML = issues.length?issues.map(x=>{const dot=x.includes('异常')||x.includes('冲突')?'error':x.includes('死链')||x.includes('缺失')?'warning':'info';return `<div class="issue-item"><span class="issue-dot ${dot}"></span>${x}</div>`;}).join(''):'<div class="empty-state">没有结构性问题</div>';
+}
+
+function renderLogs(d) {
+  const logs = d.recent_logs||[];
+  document.getElementById('logList').innerHTML = logs.slice(0,8).map(x=>`<div class="log-item"><div class="log-date">${x.file}</div><div class="log-preview">${(x.preview||'').slice(0,120)}${(x.preview||'').length>120?'...':''}</div></div>`).join('')||'<div class="empty-state">暂无操作日志</div>';
+}
+
+function renderInbox(d) {
+  const inbox = (d.inbox_backlog||[]).filter(x=>!x.file.includes('.索引'));
+  document.getElementById('inboxCount').textContent = inbox.length;
+  document.getElementById('inboxList').innerHTML = inbox.slice(0,10).map(x=>`<div class="log-item"><div class="log-preview">${x.title||x.file}</div><div class="log-date">${x.date||'日期未知'} · ${x.file}</div></div>`).join('')||'<div class="empty-state">Inbox 无积压素材</div>';
+}
+
+function renderLearnTrack(d) {
+  document.getElementById('learnTrack').innerHTML = `<div class="summary-text"><p style="margin-bottom:6px;color:var(--text-default)">简报：${(d.ideas_summary||[]).filter(x=>x.file.includes('简报')).length} 条</p><p style="margin-bottom:6px">最近简报：${(d.ideas_summary||[]).filter(x=>x.file.includes('简报')).slice(0,1).map(x=>x.file).join('')||'暂无'}</p><p style="margin-bottom:6px">Ideas 数量：${d.summary.dir_counts.Ideas||0} 篇</p><p>知识缺口：${d.structural_issues.length>0?d.structural_issues.length+' 个待解决问题':'暂无显著缺口'}</p></div>`;
+}
+
+function renderAdvise(d) {
+  const s = d.summary;
+  const notes = d.notes_breakdown.Notes||{};
+  const sugs = [];
+  const entries = Object.entries(notes).sort((a,b)=>b[1]-a[1]);
+  if (entries.length>0) { const big=entries[0]; sugs.push('「'+big[0]+'」占比 '+Math.round(big[1]/s.dir_counts.Notes*100)+'%，考虑拆分更细粒度子目录'); }
+  if (s.inbox_count>0) sugs.push('Inbox 有 '+s.inbox_count+' 篇待归档，建议今日集中整理');
+  const topLinks = d.top_wikilinks||[];
+  const wikiNames = d.wiki_files_list||[];
+  const missing = topLinks.filter(x=>x.count>=10&&!wikiNames.includes(x.name)).slice(0,6);
+  if (missing.length>0) sugs.push('以下高频术语尚无 wiki 词条：'+missing.map(x=>x.name).join('、'));
+  if (d.structural_issues.length>0) sugs.push('存在 '+d.structural_issues.length+' 个结构性问题待处理');
+  if (d.structural_issues.some(x=>x.includes('命名冲突'))) sugs.push('修复操作日志命名冲突：统一使用下划线格式');
+  if (s.broken_link_estimate>5) sugs.push('约 '+s.broken_link_estimate+' 条死链需回检清理');
+  if (sugs.length===0) sugs.push('知识库状态良好，继续保持每日维护节奏');
+  document.getElementById('adviseList').innerHTML = sugs.map(x=>`<div class="log-item" style="border-bottom:none;padding:4px 0"><div class="log-preview" style="font-size:11px">${x}</div></div>`).join('');
+}
+</script>
+</body>
+</html>

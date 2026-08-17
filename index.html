@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>知识库工作台</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+:root{--bg-base-default:#f3f5f9;--bg-base-secondary:#fff;--bg-base-tertiary:#f1efff;--bg-overlay-l1:#f0effb;--bg-brand:#6d5dfc;--text-default:#344054;--text-default-hover:#101828;--text-secondary:#667085;--text-tertiary:#98a2b3;--border-neutral-l1:#e4e7ec;--border-neutral-l2:#cfd4dc;--status-primary-default:#6d5dfc;--status-success-default:#18b79f;--status-alert-default:#f0a83a;--status-warning-default:#f79045;--status-error-default:#ef5b72;--viz-series-violet:#8b78ff;--viz-series-coral:#ef6b78;--viz-series-teal:#27c7b8}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{font-size:11px}body{min-height:100vh;background:linear-gradient(180deg,#f8f9fc,#eef1f6);color:var(--text-default);font-family:Inter,"SF Pro Text","Microsoft YaHei",system-ui,sans-serif;line-height:1.3}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#cbd1dc;border-radius:9px}.dashboard{max-width:1800px;margin:auto;padding:10px 14px 7px}.header{height:42px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}.header-left{display:flex;align-items:center;gap:8px}.header-icon{width:28px;height:28px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#5b4ce2,#8b7cff);border-radius:8px;font-size:9px;font-weight:800;box-shadow:0 6px 14px #6d5dfc36}.header h1{font-size:16px;color:#101828;letter-spacing:-.2px}.header-time{font-size:9px;color:#98a2b3}.header-right .header-time{padding:4px 8px;border:1px solid #e4e7ec;border-radius:20px;background:#fff}.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:7px}.kpi-card,.chart-card,.summary-card{background:#fff;border:1px solid #e7eaf0;border-radius:11px;box-shadow:0 3px 12px rgba(16,24,40,.04)}.kpi-card{height:58px;padding:7px 10px;position:relative;overflow:hidden}.kpi-card:first-child{background:linear-gradient(135deg,#5b4ce2,#8575f7);border:0;box-shadow:0 8px 20px #6557e82b}.kpi-label{font-size:9px;color:#7c8596;text-transform:uppercase;letter-spacing:.8px}.kpi-value{font-size:21px;line-height:1.05;font-weight:700;color:#2b245e}.kpi-sub{font-size:9px;color:#98a2b3}.kpi-card:first-child .kpi-label,.kpi-card:first-child .kpi-sub{color:#ddd8ff}.kpi-card:first-child .kpi-value{color:#fff}.kpi-accent{position:absolute;right:9px;top:9px;width:6px;height:6px;border-radius:50%;background:#6d5dfc}.kpi-card:first-child .kpi-accent{background:#bdb5ff}.kpi-accent.amber{background:#f0a83a}.kpi-accent.coral{background:#ef5b72}.kpi-accent.teal{background:#27c7b8}.section{margin-bottom:7px}.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}.section-title{font-size:10px;font-weight:650;color:#344054}.section-badge{font-size:9px;padding:2px 6px;border-radius:10px;color:#654fe0;background:#efedff}.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.chart-card{padding:6px 9px 3px}.chart-card h3{font-size:9px;color:#667085;text-transform:uppercase;letter-spacing:.7px}.chart-container{height:130px;width:100%}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.summary-card{height:103px;padding:6px 9px;overflow:hidden}.scroll-list{max-height:72px;overflow:auto}.summary-text{font-size:9px;color:#667085;line-height:1.35}.issue-item,.log-item{padding:2px 0;border-bottom:1px solid #f0f1f4;font-size:9px}.issue-item{display:flex;gap:4px}.issue-dot{width:5px;height:5px;border-radius:50%;margin-top:3px;flex:none}.issue-dot.error{background:#ef5b72}.issue-dot.warning{background:#f0a83a}.issue-dot.info{background:#6d5dfc}.log-date{font-size:9px;color:#98a2b3}.log-preview{font-size:9px;color:#667085;line-height:1.25}.wiki-tag{display:inline-flex;gap:3px;margin:1px;padding:2px 5px;border-radius:6px;background:#f3f1ff;color:#5142b8;font-size:9px}.wiki-tag .freq{color:#8b7ee0}.footer{text-align:center;padding-top:2px;border-top:1px solid #e4e7ec;color:#98a2b3;font-size:9px}.empty-state{text-align:center;padding:5px;color:#98a2b3;font-size:9px}/* Obsidian 深灰全高布局 */
+:root{--bg-base-default:#202020;--bg-base-secondary:#282828;--bg-base-tertiary:#303030;--bg-overlay-l1:#34313f;--text-default:#d4d4d4;--text-default-hover:#f2f2f2;--text-secondary:#b6b6b6;--text-tertiary:#858585;--border-neutral-l1:#3a3a3a;--border-neutral-l2:#4b4b4b}
+html,body{height:100%;background:#202020}body{min-height:100%;background:radial-gradient(circle at 50% -25%,#30303a 0,transparent 42%),#202020;color:var(--text-default);overflow:hidden}
+.dashboard{width:100%;max-width:1800px;height:100vh;min-height:600px;margin:auto;padding:10px 14px 8px;display:grid;grid-template-rows:42px 66px minmax(150px,1.22fr) minmax(150px,1.22fr) minmax(112px,.82fr) minmax(112px,.82fr) 15px;gap:8px}
+.header,.kpi-grid,.section{margin:0;min-height:0}.header{height:auto}.header h1{color:#f0f0f0}.header-right .header-time{border-color:#3a3a3a;background:#292929;color:#aaa}.header-time{color:#8f8f8f}
+.kpi-grid{height:100%;gap:8px}.kpi-card,.chart-card,.summary-card{background:linear-gradient(145deg,#2b2b2b,#262626);border-color:#3a3a3a;box-shadow:0 4px 16px rgba(0,0,0,.16)}.kpi-card{height:100%;padding:9px 12px}.kpi-card:first-child{background:linear-gradient(135deg,#5d50d6,#7869eb)}.kpi-label{color:#aaa}.kpi-value{font-size:24px;color:#e8e5ff}.kpi-sub{color:#858585}
+.section{display:grid;grid-template-rows:minmax(0,1fr);gap:4px}.section:has(> .section-header){grid-template-rows:auto minmax(0,1fr)}.section-header{margin:0}.section-title{color:#d7d7d7;font-size:11px}.section-badge{color:#b9adff;background:#373246}.chart-grid,.grid-3{height:100%;min-height:0;gap:8px}.chart-card{height:100%;min-height:0;padding:8px 11px 5px;display:grid;grid-template-rows:auto minmax(0,1fr)}.chart-card h3{color:#bcbcbc;font-size:10px}.chart-container{height:100%;min-height:0}.summary-card{height:100%;min-height:0;padding:8px 11px}.scroll-list{max-height:calc(100% - 18px)}.summary-text,.log-preview{color:#b8b8b8}.log-date{color:#7f7f7f}.issue-item,.log-item{border-color:#383838}.wiki-tag{background:#353140;color:#c6bcff}.wiki-tag .freq{color:#9789ec}.footer{height:100%;padding:1px 0 0;border-color:#353535;color:#737373}.empty-state{color:#7f7f7f}
+@media(max-height:620px) and (min-width:901px){body{overflow:auto}.dashboard{height:620px}}
+@media(max-width:900px){body{overflow:auto}.dashboard{height:auto;min-height:100vh;display:block}.header,.kpi-grid,.section{margin-bottom:8px}.kpi-grid{grid-template-columns:repeat(3,1fr);height:auto}.kpi-card{height:66px}.chart-grid{grid-template-columns:1fr}.chart-card{height:220px;margin-bottom:8px}.grid-3{grid-template-columns:1fr 1fr}.summary-card{height:130px}.chart-container{height:190px}}
+@media(max-width:520px){.kpi-grid,.grid-3{grid-template-columns:1fr}.header-time{display:none}.summary-card{height:auto;min-height:120px}}
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <header class="header">
+    <div class="header-left">
+      <div class="header-icon">KB</div>
+      <h1>知识库工作台</h1>
+      <span class="header-time" id="updateTime">加载中...</span>
+    </div>
+    <div class="header-right">
+      <span class="header-time">插件定时更新</span>
+    </div>
+  </header>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="section">
+    <div class="section-header"><span class="section-title">结构与趋势</span></div>
+    <div class="chart-grid">
+      <div class="chart-card"><h3>Notes 子目录分布</h3><div class="chart-container" id="chartNotesDist"></div></div>
+      <div class="chart-card"><h3>wiki 词条分类</h3><div class="chart-container" id="chartWikiCat"></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="chart-grid">
+      <div class="chart-card"><h3>高频双链 TOP 20</h3><div class="chart-container" id="chartTopLinks"></div></div>
+      <div class="chart-card"><h3>简报连续性</h3><div class="chart-container" id="chartBriefs"></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="grid-3">
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">高频双链 TOP 10</span></div>
+        <div id="wikiTopList"></div>
+      </div>
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">结构问题</span><span class="section-badge" id="issueCount">0</span></div>
+        <div id="issueList"></div>
+      </div>
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">最近操作日志</span></div>
+        <div class="scroll-list" id="logList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="grid-3">
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">Inbox 积压</span><span class="section-badge" id="inboxCount">0</span></div>
+        <div id="inboxList" class="scroll-list"></div>
+      </div>
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">认知升级追踪</span></div>
+        <div id="learnTrack"></div>
+      </div>
+      <div class="summary-card">
+        <div class="section-header" style="margin-bottom:2px"><span class="section-title">知识提升建议</span></div>
+        <div id="adviseList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer" id="footerNote"></div>
+</div>
+
+<script>
+const KB_DATA = "{\"generated_at\": \"2026-07-31 21:14\", \"summary\": {\"total_md\": 1196, \"dir_counts\": {\"Inbox\": 0, \"Notes\": 894, \"Ideas\": 34, \"wiki\": 190, \"Projects\": 46, \"Logs\": 23, \"Template\": 8}, \"wiki_count\": 190, \"inbox_count\": 0, \"broken_link_estimate\": 16}, \"dirs\": {\"Inbox\": {\"count\": 0, \"subdirs\": {}}, \"Notes\": {\"count\": 894, \"subdirs\": {\"SCADA_FAQ\": 299, \"IO_FAQ\": 192, \"华康网关_FAQ\": 66, \"系统与软件\": 52, \"工业自动化\": 47, \"pSpace_FAQ\": 45, \"PM与职场\": 41, \"FWebView_FAQ\": 35, \"AI与Agent\": 31, \"网络与硬件\": 23, \"pSpace_手册\": 21, \"eForceCon_手册\": 12, \"pSpace_linux_手册\": 11, \"华康网关_手册\": 8, \"Other_FAQ\": 4, \"ForceControl_手册\": 4, \"FinforWorx_手册\": 2, \"ForceSCADA_手册\": 1}}, \"Ideas\": {\"count\": 34, \"subdirs\": {\"认知简报_2026-07-29.md\": 1, \"认知简报_2026-07-30.md\": 1, \"认知简报_2026-07-28.md\": 1, \"认知简报_2026-07-25.md\": 1, \"认知简报_2026-07-27.md\": 1, \"认知简报_2026-07-26.md\": 1, \"认知简报_2026-07-24.md\": 1, \"认知简报_2026-07-23.md\": 1, \"认知简报_2026-07-22.md\": 1, \"认知简报_2026-07-21.md\": 1, \"认知简报_2026-07-19.md\": 1, \"认知简报_2026-07-20.md\": 1, \"认知简报_2026-07-18.md\": 1, \"认知简报_2026-07-17.md\": 1, \"认知简报_2026-07-16.md\": 1, \"认知简报_2026-07-15.md\": 1, \"认知简报_2026-07-14.md\": 1, \"认知简报_2026-07-13.md\": 1, \"认知简报_2026-07-12.md\": 1, \"认知简报_2026-07-11.md\": 1, \"认知简报_2026-07-10.md\": 1, \"认知简报_2026-07-09.md\": 1, \"认知简报_2026-07-08.md\": 1, \"认知简报_2026-07-07.md\": 1, \"认知简报_2026-07-06.md\": 1, \"认知简报_2026-07-04.md\": 1, \"认知简报_2026-07-03.md\": 1, \"认知简报_2026-07-02.md\": 1, \"认知简报_2026-07-01.md\": 1, \"周复盘_2026-07-25.md\": 1, \"周复盘_2026-07-11.md\": 1, \"周复盘_2026-07-18.md\": 1, \"周复盘_2026-07-03.md\": 1, \"OPC通讯诊断清单.md\": 1}}, \"wiki\": {\"count\": 190, \"subdirs\": {\"项目管理.md\": 1, \"项目经理.md\": 1, \"闪退.md\": 1, \"连接故障.md\": 1, \"组态软件.md\": 1, \"网关运维.md\": 1, \"西门子S7.md\": 1, \"硬锁.md\": 1, \"电力规约.md\": 1, \"深思软锁.md\": 1, \"时序数据库.md\": 1, \"海康.md\": 1, \"浮点数.md\": 1, \"松下.md\": 1, \"数据采集.md\": 1, \"数据显示.md\": 1, \"数据库.md\": 1, \"数据下置.md\": 1, \"故障排查.md\": 1, \"报警策略.md\": 1, \"报警系统.md\": 1, \"报警优先级.md\": 1, \"报警管理.md\": 1, \"报警.md\": 1, \"报警审定.md\": 1, \"工业自动化.md\": 1, \"变更管理.md\": 1, \"工艺报警.md\": 1, \"北京力控元通科技有限公司.md\": 1, \"备份工具.md\": 1, \"加密锁.md\": 1, \"力控.md\": 1, \"关系数据库.md\": 1, \"三菱.md\": 1, \"XML.md\": 1, \"Windows.md\": 1, \"Win7.md\": 1, \"WebAPI.md\": 1, \"Web.md\": 1, \"VPN.md\": 1, \"View.md\": 1, \"VNC.md\": 1, \"VLAN.md\": 1, \"VC++.md\": 1, \"VB.md\": 1, \"URL.md\": 1, \"Unix.md\": 1, \"Ukey.md\": 1, \"UDP.md\": 1, \"UAServer.md\": 1, \"Token.md\": 1, \"TimescaleDB.md\": 1, \"TCP_IP.md\": 1, \"TDengine.md\": 1, \"TCP.md\": 1, \"SSL.md\": 1, \"SSH.md\": 1, \"SQL.md\": 1, \"SQLRouter.md\": 1, \"SQL Server.md\": 1, \"SNMP.md\": 1, \"SDK.md\": 1, \"SNAT.md\": 1, \"SCADA.md\": 1, \"Skills.md\": 1, \"Redis.md\": 1, \"S7-200.md\": 1, \"RTU.md\": 1, \"ReAct.md\": 1, \"RAG.md\": 1, \"pSpace.md\": 1, \"psSimulator.md\": 1, \"Python.md\": 1, \"psWebAdmin.md\": 1, \"psView.md\": 1, \"pSpace Server.md\": 1, \"pSpace SDK.md\": 1, \"pSpace-Linux.md\": 1, \"pSpace Admin.md\": 1, \"psMonitor.md\": 1, \"psNTService.md\": 1, \"psConfig.md\": 1, \"pSafetyLink.md\": 1, \"Prompt.md\": 1, \"PLC.md\": 1, \"Prometheus.md\": 1, \"PID控制.md\": 1, \"PostgreSQL.md\": 1, \"ping.md\": 1, \"PI System.md\": 1, \"Oracle.md\": 1, \"OpcEnum.md\": 1, \"OPCUAServer.md\": 1, \"OPCServer.md\": 1, \"OPC.md\": 1, \"OPC UA Server.md\": 1, \"OPC UA.md\": 1, \"ODBCRouter.md\": 1, \"OPC Server.md\": 1, \"OLE.md\": 1, \"ODBC.md\": 1, \"Obsidian.md\": 1, \"NetServer.md\": 1, \"MySQL.md\": 1, \"Modbus.md\": 1, \"MQTT.md\": 1, \"MES.md\": 1, \"Markdown.md\": 1, \"IOServer.md\": 1, \"IoMonitor.md\": 1, \"MAC.md\": 1, \"Linux.md\": 1, \"LKT.md\": 1, \"JSON.md\": 1, \"IP.md\": 1, \"JDBC.md\": 1, \"IOConfig.md\": 1, \"IP 地址.md\": 1, \"IoTDB.md\": 1, \"InfluxDB.md\": 1, \"IOFileServer.md\": 1, \"Internet.md\": 1, \"IOClient.md\": 1, \"IIS.md\": 1, \"IEC104.md\": 1, \"IEC101.md\": 1, \"HTTP.md\": 1, \"IE.md\": 1, \"HTML5.md\": 1, \"Httpsvr.md\": 1, \"HTML.md\": 1, \"HDA.md\": 1, \"Hermes Agent.md\": 1, \"HDB.md\": 1, \"HC-ISG.md\": 1, \"H5.md\": 1, \"GitHub.md\": 1, \"GPRS.md\": 1, \"Git.md\": 1, \"GE.md\": 1, \"GIF.md\": 1, \"FWebView.md\": 1, \"ForceSCADA.md\": 1, \"FTP.md\": 1, \"FSmartWorx.md\": 1, \"ForceControl.md\": 1, \"FinforWorx.md\": 1, \"ForceControl V7.md\": 1, \"Flash.md\": 1, \"Fcyber.md\": 1, \"FC7.md\": 1, \"FCloudComm.md\": 1, \"FC.md\": 1, \"Excel.md\": 1, \"ES.md\": 1, \"eForceCon.md\": 1, \"ET.md\": 1, \"EF.md\": 1, \"ERP.md\": 1, \"DSN.md\": 1, \"DTU.md\": 1, \"DolphinDB.md\": 1, \"DNP3.md\": 1, \"DDE.md\": 1, \"DNAT.md\": 1, \"DCOM.md\": 1, \"DCS.md\": 1, \"DBServer.md\": 1, \"DB.md\": 1, \"CS架构.md\": 1, \"CSV.md\": 1, \"CommServer.md\": 1, \"COM.md\": 1, \"config.ini.md\": 1, \"Codex.md\": 1, \"C-S.md\": 1, \"Claude.md\": 1, \"CDT.md\": 1, \"BS架构.md\": 1, \"Basic.md\": 1, \"API.md\": 1, \"B-S.md\": 1, \"AI.md\": 1, \"Agent.md\": 1, \"APP.md\": 1, \"Access.md\": 1, \"ActiveX.md\": 1, \"5G.md\": 1, \"4G.md\": 1, \"AB.md\": 1}}, \"Projects\": {\"count\": 46, \"subdirs\": {\"我的知识库\": 14, \"Metool在线工具本地化\": 12, \"工艺生产报警优化管理系统\": 8, \"云南驰宏资源综合利用有限公司\": 4, \"OpcDaToUaGateway\": 2, \"OpcDa2ModbusGateway\": 2, \"最新项目关注项清单.md\": 1, \"skills-清单.md\": 1, \"API-key.md\": 1, \"Emoji 表情.md\": 1}}, \"Logs\": {\"count\": 23, \"subdirs\": {\"知识库标签名词清单.md\": 1, \"知识库双链名词清单.md\": 1, \"操作日志_2026_07_29.md\": 1, \"操作日志_2026_07_28.md\": 1, \"操作日志_2026_07_27.md\": 1, \"操作日志_2026_07_26.md\": 1, \"操作日志_2026_07_25.md\": 1, \"操作日志_2026_07_24.md\": 1, \"操作日志_2026_07_23.md\": 1, \"操作日志_2026_07_22.md\": 1, \"操作日志_2026_07_21.md\": 1, \"操作日志_2026_07_20.md\": 1, \"操作日志_2026_07_19.md\": 1, \"操作日志_2026_07_18.md\": 1, \"操作日志_2026_07_17.md\": 1, \"操作日志_2026_07_16.md\": 1, \"操作日志_2026-07-30.md\": 1, \"修复记录.md\": 1, \"frontmatter_check_report_2026-07-21.md\": 1, \"frontmatter_check_report_2026-07-20.md\": 1, \"frontmatter_check_report_2026-07-19.md\": 1, \"frontmatter_check_report_2026-07-17.md\": 1, \"frontmatter_check_report_2026-07-16.md\": 1}}, \"Template\": {\"count\": 8, \"subdirs\": {\"项目管理模板.md\": 1, \"目标追踪模板.md\": 1, \"每日笔记模板.md\": 1, \"每周总结模板.md\": 1, \"学习笔记模板.md\": 1, \"头脑风暴模板.md\": 1, \"操作日志模板.md\": 1, \"会议纪要模板.md\": 1}}}, \"notes_breakdown\": {\"Inbox\": {}, \"Notes\": {\"SCADA_FAQ\": 299, \"IO_FAQ\": 192, \"华康网关_FAQ\": 66, \"系统与软件\": 52, \"工业自动化\": 47, \"pSpace_FAQ\": 45, \"PM与职场\": 41, \"FWebView_FAQ\": 35, \"AI与Agent\": 31, \"网络与硬件\": 23, \"pSpace_手册\": 21, \"eForceCon_手册\": 12, \"pSpace_linux_手册\": 11, \"华康网关_手册\": 8, \"Other_FAQ\": 4, \"ForceControl_手册\": 4, \"FinforWorx_手册\": 2, \"ForceSCADA_手册\": 1}, \"Ideas\": {\"认知简报_2026-07-29.md\": 1, \"认知简报_2026-07-30.md\": 1, \"认知简报_2026-07-28.md\": 1, \"认知简报_2026-07-25.md\": 1, \"认知简报_2026-07-27.md\": 1, \"认知简报_2026-07-26.md\": 1, \"认知简报_2026-07-24.md\": 1, \"认知简报_2026-07-23.md\": 1, \"认知简报_2026-07-22.md\": 1, \"认知简报_2026-07-21.md\": 1, \"认知简报_2026-07-19.md\": 1, \"认知简报_2026-07-20.md\": 1, \"认知简报_2026-07-18.md\": 1, \"认知简报_2026-07-17.md\": 1, \"认知简报_2026-07-16.md\": 1, \"认知简报_2026-07-15.md\": 1, \"认知简报_2026-07-14.md\": 1, \"认知简报_2026-07-13.md\": 1, \"认知简报_2026-07-12.md\": 1, \"认知简报_2026-07-11.md\": 1, \"认知简报_2026-07-10.md\": 1, \"认知简报_2026-07-09.md\": 1, \"认知简报_2026-07-08.md\": 1, \"认知简报_2026-07-07.md\": 1, \"认知简报_2026-07-06.md\": 1, \"认知简报_2026-07-04.md\": 1, \"认知简报_2026-07-03.md\": 1, \"认知简报_2026-07-02.md\": 1, \"认知简报_2026-07-01.md\": 1, \"周复盘_2026-07-25.md\": 1, \"周复盘_2026-07-11.md\": 1, \"周复盘_2026-07-18.md\": 1, \"周复盘_2026-07-03.md\": 1, \"OPC通讯诊断清单.md\": 1}, \"wiki\": {\"项目管理.md\": 1, \"项目经理.md\": 1, \"闪退.md\": 1, \"连接故障.md\": 1, \"组态软件.md\": 1, \"网关运维.md\": 1, \"西门子S7.md\": 1, \"硬锁.md\": 1, \"电力规约.md\": 1, \"深思软锁.md\": 1, \"时序数据库.md\": 1, \"海康.md\": 1, \"浮点数.md\": 1, \"松下.md\": 1, \"数据采集.md\": 1, \"数据显示.md\": 1, \"数据库.md\": 1, \"数据下置.md\": 1, \"故障排查.md\": 1, \"报警策略.md\": 1, \"报警系统.md\": 1, \"报警优先级.md\": 1, \"报警管理.md\": 1, \"报警.md\": 1, \"报警审定.md\": 1, \"工业自动化.md\": 1, \"变更管理.md\": 1, \"工艺报警.md\": 1, \"北京力控元通科技有限公司.md\": 1, \"备份工具.md\": 1, \"加密锁.md\": 1, \"力控.md\": 1, \"关系数据库.md\": 1, \"三菱.md\": 1, \"XML.md\": 1, \"Windows.md\": 1, \"Win7.md\": 1, \"WebAPI.md\": 1, \"Web.md\": 1, \"VPN.md\": 1, \"View.md\": 1, \"VNC.md\": 1, \"VLAN.md\": 1, \"VC++.md\": 1, \"VB.md\": 1, \"URL.md\": 1, \"Unix.md\": 1, \"Ukey.md\": 1, \"UDP.md\": 1, \"UAServer.md\": 1, \"Token.md\": 1, \"TimescaleDB.md\": 1, \"TCP_IP.md\": 1, \"TDengine.md\": 1, \"TCP.md\": 1, \"SSL.md\": 1, \"SSH.md\": 1, \"SQL.md\": 1, \"SQLRouter.md\": 1, \"SQL Server.md\": 1, \"SNMP.md\": 1, \"SDK.md\": 1, \"SNAT.md\": 1, \"SCADA.md\": 1, \"Skills.md\": 1, \"Redis.md\": 1, \"S7-200.md\": 1, \"RTU.md\": 1, \"ReAct.md\": 1, \"RAG.md\": 1, \"pSpace.md\": 1, \"psSimulator.md\": 1, \"Python.md\": 1, \"psWebAdmin.md\": 1, \"psView.md\": 1, \"pSpace Server.md\": 1, \"pSpace SDK.md\": 1, \"pSpace-Linux.md\": 1, \"pSpace Admin.md\": 1, \"psMonitor.md\": 1, \"psNTService.md\": 1, \"psConfig.md\": 1, \"pSafetyLink.md\": 1, \"Prompt.md\": 1, \"PLC.md\": 1, \"Prometheus.md\": 1, \"PID控制.md\": 1, \"PostgreSQL.md\": 1, \"ping.md\": 1, \"PI System.md\": 1, \"Oracle.md\": 1, \"OpcEnum.md\": 1, \"OPCUAServer.md\": 1, \"OPCServer.md\": 1, \"OPC.md\": 1, \"OPC UA Server.md\": 1, \"OPC UA.md\": 1, \"ODBCRouter.md\": 1, \"OPC Server.md\": 1, \"OLE.md\": 1, \"ODBC.md\": 1, \"Obsidian.md\": 1, \"NetServer.md\": 1, \"MySQL.md\": 1, \"Modbus.md\": 1, \"MQTT.md\": 1, \"MES.md\": 1, \"Markdown.md\": 1, \"IOServer.md\": 1, \"IoMonitor.md\": 1, \"MAC.md\": 1, \"Linux.md\": 1, \"LKT.md\": 1, \"JSON.md\": 1, \"IP.md\": 1, \"JDBC.md\": 1, \"IOConfig.md\": 1, \"IP 地址.md\": 1, \"IoTDB.md\": 1, \"InfluxDB.md\": 1, \"IOFileServer.md\": 1, \"Internet.md\": 1, \"IOClient.md\": 1, \"IIS.md\": 1, \"IEC104.md\": 1, \"IEC101.md\": 1, \"HTTP.md\": 1, \"IE.md\": 1, \"HTML5.md\": 1, \"Httpsvr.md\": 1, \"HTML.md\": 1, \"HDA.md\": 1, \"Hermes Agent.md\": 1, \"HDB.md\": 1, \"HC-ISG.md\": 1, \"H5.md\": 1, \"GitHub.md\": 1, \"GPRS.md\": 1, \"Git.md\": 1, \"GE.md\": 1, \"GIF.md\": 1, \"FWebView.md\": 1, \"ForceSCADA.md\": 1, \"FTP.md\": 1, \"FSmartWorx.md\": 1, \"ForceControl.md\": 1, \"FinforWorx.md\": 1, \"ForceControl V7.md\": 1, \"Flash.md\": 1, \"Fcyber.md\": 1, \"FC7.md\": 1, \"FCloudComm.md\": 1, \"FC.md\": 1, \"Excel.md\": 1, \"ES.md\": 1, \"eForceCon.md\": 1, \"ET.md\": 1, \"EF.md\": 1, \"ERP.md\": 1, \"DSN.md\": 1, \"DTU.md\": 1, \"DolphinDB.md\": 1, \"DNP3.md\": 1, \"DDE.md\": 1, \"DNAT.md\": 1, \"DCOM.md\": 1, \"DCS.md\": 1, \"DBServer.md\": 1, \"DB.md\": 1, \"CS架构.md\": 1, \"CSV.md\": 1, \"CommServer.md\": 1, \"COM.md\": 1, \"config.ini.md\": 1, \"Codex.md\": 1, \"C-S.md\": 1, \"Claude.md\": 1, \"CDT.md\": 1, \"BS架构.md\": 1, \"Basic.md\": 1, \"API.md\": 1, \"B-S.md\": 1, \"AI.md\": 1, \"Agent.md\": 1, \"APP.md\": 1, \"Access.md\": 1, \"ActiveX.md\": 1, \"5G.md\": 1, \"4G.md\": 1, \"AB.md\": 1}, \"Projects\": {\"我的知识库\": 14, \"Metool在线工具本地化\": 12, \"工艺生产报警优化管理系统\": 8, \"云南驰宏资源综合利用有限公司\": 4, \"OpcDaToUaGateway\": 2, \"OpcDa2ModbusGateway\": 2, \"最新项目关注项清单.md\": 1, \"skills-清单.md\": 1, \"API-key.md\": 1, \"Emoji 表情.md\": 1}, \"Logs\": {\"知识库标签名词清单.md\": 1, \"知识库双链名词清单.md\": 1, \"操作日志_2026_07_29.md\": 1, \"操作日志_2026_07_28.md\": 1, \"操作日志_2026_07_27.md\": 1, \"操作日志_2026_07_26.md\": 1, \"操作日志_2026_07_25.md\": 1, \"操作日志_2026_07_24.md\": 1, \"操作日志_2026_07_23.md\": 1, \"操作日志_2026_07_22.md\": 1, \"操作日志_2026_07_21.md\": 1, \"操作日志_2026_07_20.md\": 1, \"操作日志_2026_07_19.md\": 1, \"操作日志_2026_07_18.md\": 1, \"操作日志_2026_07_17.md\": 1, \"操作日志_2026_07_16.md\": 1, \"操作日志_2026-07-30.md\": 1, \"修复记录.md\": 1, \"frontmatter_check_report_2026-07-21.md\": 1, \"frontmatter_check_report_2026-07-20.md\": 1, \"frontmatter_check_report_2026-07-19.md\": 1, \"frontmatter_check_report_2026-07-17.md\": 1, \"frontmatter_check_report_2026-07-16.md\": 1}, \"Template\": {\"项目管理模板.md\": 1, \"目标追踪模板.md\": 1, \"每日笔记模板.md\": 1, \"每周总结模板.md\": 1, \"学习笔记模板.md\": 1, \"头脑风暴模板.md\": 1, \"操作日志模板.md\": 1, \"会议纪要模板.md\": 1}}, \"wiki_tags\": {\"by_category\": {\"力控产品\": 47, \"数据库\": 20, \"网络协议\": 19, \"工业通信\": 12, \"AI技术\": 10, \"软件技术\": 10, \"力控概念\": 7, \"通用技术\": 6, \"软件工具\": 4, \"编程语言\": 4, \"力控产品组件\": 4, \"PLC\": 4, \"PLC品牌\": 3, \"数据格式\": 3, \"操作系统\": 3, \"网络安全\": 3, \"开发工具\": 3, \"前端技术\": 3, \"项目管理\": 2, \"安全授权\": 2, \"软件开发\": 2, \"力控工具\": 2, \"网络设备\": 2, \"网络架构\": 2, \"软件架构\": 2, \"故障排查\": 1, \"PLC通信\": 1, \"授权/加密\": 1, \"计算机基础\": 1, \"PM与职场\": 1, \"运维工具\": 1, \"硬件/安全\": 1, \"工业软件组件\": 1, \"数据库接口\": 1, \"网络基础\": 1, \"配置文件\": 1}, \"tag_freq\": {\"39\": 6, \"334155\": 3, \"0e1116\": 36, \"fff\": 36, \"Report\": 17, \"DateTime\": 12, \"RouterCtrl\": 12, \"1f6feb\": 9, \"2f9e6e\": 9, \"e8590c\": 9, \"b08d57\": 9, \"0f172a\": 9, \"测试\": 9, \"SuperCurve\": 8, \"xff0c\": 7, \"DateTime1\": 7, \"f1f5f9\": 6, \"64748b\": 6, \"94a3b8\": 6, \"dc2626\": 6, \"16a34a\": 6, \"pRecipe\": 5, \"FtpTransfer\": 5, \"TrendCurve\": 4, \"TrendCurveEx\": 4, \"TextControl\": 4, \"TextControl1\": 4, \"sys_date\": 4, \"uuid\": 4, \"f8fafc\": 3}}, \"wiki_files_list\": [], \"top_wikilinks\": [{\"name\": \"pSpace\", \"count\": 1797}, {\"name\": \"力控\", \"count\": 710}, {\"name\": \"北京力控元通科技有限公司\", \"count\": 625}, {\"name\": \"EF\", \"count\": 440}, {\"name\": \"Windows\", \"count\": 341}, {\"name\": \"FC\", \"count\": 339}, {\"name\": \"OPC\", \"count\": 325}, {\"name\": \"ForceControl\", \"count\": 228}, {\"name\": \"ODBC\", \"count\": 225}, {\"name\": \"pSpace Server\", \"count\": 221}, {\"name\": \"FWebView\", \"count\": 176}, {\"name\": \"DB\", \"count\": 156}, {\"name\": \"IOServer\", \"count\": 134}, {\"name\": \"SQL\", \"count\": 127}, {\"name\": \"View\", \"count\": 125}, {\"name\": \"Modbus\", \"count\": 124}, {\"name\": \"IOConfig\", \"count\": 119}, {\"name\": \"IP\", \"count\": 118}, {\"name\": \"eForceCon\", \"count\": 116}, {\"name\": \"IE\", \"count\": 114}, {\"name\": \"SCADA\", \"count\": 113}, {\"name\": \"URL\", \"count\": 105}, {\"name\": \"ODBCRouter\", \"count\": 99}, {\"name\": \"API\", \"count\": 93}, {\"name\": \"PLC\", \"count\": 93}, {\"name\": \"OPC Server\", \"count\": 93}, {\"name\": \"Linux\", \"count\": 87}, {\"name\": \"H5\", \"count\": 84}, {\"name\": \"IOMonitor\", \"count\": 81}, {\"name\": \"IEC104\", \"count\": 78}, {\"name\": \"MySQL\", \"count\": 77}, {\"name\": \"FC7\", \"count\": 74}, {\"name\": \"Git\", \"count\": 72}, {\"name\": \"Excel\", \"count\": 71}, {\"name\": \"OPC UA\", \"count\": 70}, {\"name\": \"psConfig\", \"count\": 69}, {\"name\": \"pSpace SDK\", \"count\": 68}, {\"name\": \"psMonitor\", \"count\": 67}, {\"name\": \"IoMonitor\", \"count\": 65}, {\"name\": \"HDA\", \"count\": 62}], \"top_tags\": [{\"name\": \"0e1116\", \"count\": 36}, {\"name\": \"fff\", \"count\": 36}, {\"name\": \"Report\", \"count\": 17}, {\"name\": \"DateTime\", \"count\": 12}, {\"name\": \"RouterCtrl\", \"count\": 12}, {\"name\": \"1f6feb\", \"count\": 9}, {\"name\": \"2f9e6e\", \"count\": 9}, {\"name\": \"e8590c\", \"count\": 9}, {\"name\": \"b08d57\", \"count\": 9}, {\"name\": \"0f172a\", \"count\": 9}, {\"name\": \"测试\", \"count\": 9}, {\"name\": \"SuperCurve\", \"count\": 8}, {\"name\": \"xff0c\", \"count\": 7}, {\"name\": \"DateTime1\", \"count\": 7}, {\"name\": \"39\", \"count\": 6}, {\"name\": \"f1f5f9\", \"count\": 6}, {\"name\": \"64748b\", \"count\": 6}, {\"name\": \"94a3b8\", \"count\": 6}, {\"name\": \"dc2626\", \"count\": 6}, {\"name\": \"16a34a\", \"count\": 6}, {\"name\": \"pRecipe\", \"count\": 5}, {\"name\": \"FtpTransfer\", \"count\": 5}, {\"name\": \"TrendCurve\", \"count\": 4}, {\"name\": \"TrendCurveEx\", \"count\": 4}, {\"name\": \"TextControl\", \"count\": 4}, {\"name\": \"TextControl1\", \"count\": 4}, {\"name\": \"sys_date\", \"count\": 4}, {\"name\": \"uuid\", \"count\": 4}, {\"name\": \"334155\", \"count\": 3}, {\"name\": \"f8fafc\", \"count\": 3}, {\"name\": \"ffffff\", \"count\": 3}, {\"name\": \"1e293b\", \"count\": 3}, {\"name\": \"cbd5e1\", \"count\": 3}, {\"name\": \"7c3aed\", \"count\": 3}, {\"name\": \"a78bfa\", \"count\": 3}, {\"name\": \"4ade80\", \"count\": 3}, {\"name\": \"2563eb\", \"count\": 3}, {\"name\": \"60a5fa\", \"count\": 3}, {\"name\": \"f87171\", \"count\": 3}, {\"name\": \"output\", \"count\": 3}], \"inbox_backlog\": [], \"recent_logs\": [{\"file\": \"操作日志_2026-07-30.md\", \"preview\": \"title: 操作日志 2026-07-30\\ndate: 2026-07-30\\ntags:\\n  - 操作日志\\n  - 知识采集\\n  - 2026年7月\\n**执行时间**：2026-07-30 (北京时间 UTC+8)\\n**采集概况**：通过WebSearch和WebFetch从CSDN、今日头条、腾讯文档等平台采集高质量内容，按领域分类存储至Inbox目录。本次采集侧重工业自动化、网络硬件、计算机系统、AI与Agent、PM与项目管理五大领域。\"}, {\"file\": \"操作日志_2026_07_29.md\", \"preview\": \"title: 操作日志 2026-07-29\\ndate: 2026-07-29\\ntags:\\n  - 操作日志\\n  - 知识采集\\n  - 2026年7月\\n**执行时间**：2026-07-29 (北京时间)\\n**采集概况**：通过WebSearch和WebFetch从CSDN、搜狐网、人人文库等技术平台采集15篇高质量内容，按领域分类存储至Inbox目录。本次为补充性深度采集，获取更详细的专业技术文章。\"}, {\"file\": \"操作日志_2026_07_28.md\", \"preview\": \"title: 操作日志 2026-07-28\\ndate: 2026-07-28\\ntags:\\n  - 操作日志\\n  - 知识采集\\n  - 2026年7月\\n**执行时间**：2026-07-28 (北京时间)\\n**采集概况**：从5大领域采集15篇高质量内容，写入Inbox根目录。\"}, {\"file\": \"操作日志_2026_07_27.md\", \"preview\": \"**执行时间**：2026-07-27 00:00 (北京时间)\\n**采集概况**：从5大领域采集13篇高质量内容，写入Inbox对应子目录。\\n| 领域 | 篇数 | 文章标题 | 来源平台 |\\n|---|---|---|---|\\n| 工业自动化 | 3 | SCADA系统Web化技术演进 / 国产水务SCADA系统品牌实测 / 制造业数据采集技术指南 | 今日头条/搜狐 |\\n| 网络与硬件 | 3 | 工业以太网交换机全千兆组网 / 华为光网络接入设备专利 / 智能工业网关厂商深度剖析 | 搜狐/网易/中华网 |\\n| 系统与软件 | 3 | Linux运维六个典型问题排查 / Linux运维\"}, {\"file\": \"操作日志_2026_07_26.md\", \"preview\": \"title: 操作日志 2026-07-26\\ndate: 2026-07-26\\ntags:\\n  - 操作日志\\n  - 知识采集\\nsource: 内部\\nstatus: 定稿\\n**执行时间**：2026-07-26 18:00-19:30（北京时间）\"}, {\"file\": \"操作日志_2026_07_25.md\", \"preview\": \"title: 操作日志 2026-07-25\\ndate: 2026-07-25\\ntags:\\n  - 操作日志\\nsource: 原创\\nstatus: 定稿\\n在 `D:\\\\Documents\\\\Obsidian Vault\\\\wiki` 目录下创建 6 个 wiki 词条文件，基于双链频率统计筛选（双链 >= 18 次且尚无 wiki 的力控系/时序数据库相关术语）：\\n| 序号 | 文件名 | 词条 | 行数 | 主要双链指向 |\"}, {\"file\": \"操作日志_2026_07_24.md\", \"preview\": \"**操作时间**：2026-07-24 （北京时间）\\n**操作类型**：知识采集\\n**采集渠道**：CSDN博客、今日头条、搜狐网、51CTO博客、网易新闻\\n**采集数量**：15篇（5个领域各3篇）\\n1. `Modbus通讯技术深度解析：从协议本质到工业落地` — 来源：CSDN博客 / 作者：满满的好奇\\n2. `工业网关设计：如何高效桥接Modbus与OPC UA实现数据互通` — 来源：CSDN博客 / 作者：威哥说编程\\n3. `2026工控行业爆发，自研.NET上位机逐步替代商用组态软件` — 来源：今日头条\\n4. `工业设备组网实战：EtherCAT转Profinet网关配置全流程`\"}, {\"file\": \"操作日志_2026_07_23.md\", \"preview\": \"> 执行时间：2026-07-23 08:50（北京时间 UTC+8）\\n> 任务：每日多渠道知识采集（自动化 automation-1784375574459）\\n> 采集总量：15 篇（5 大领域 × 3 篇），落库 `Inbox/` 对应子目录，文件名前缀 `20260723_`\\n| 序号 | 笔记文件 | 文章标题 | 来源平台 |\\n|------|----------|----------|----------|\\n| 1 | 20260723_开源工业数采工具SnetIotDaq.md | 开源工业数采工具：插件热插拔、OPC UA/MQTT内置、开箱即用 | 微信公众号（物联网星球） \"}, {\"file\": \"操作日志_2026_07_22.md\", \"preview\": \"> 执行时间：2026-07-22 08:50（北京时间）\\n> 任务：每日多渠道知识采集（自动化 automation-1784375574459）\\n> 采集规则：优先微信/小红书，扩展知乎/CSDN/掘金等；优先近 24h，不足扩至近 7 天；不足不凑数\\n> 本次结果：采集 15 篇（5 领域 × 3 篇），存放 `Inbox/`（文件名前缀 `20260722_`），每篇含完整 YAML frontmatter（status: 待归档）+ 清洗正文 + 结构化模块（核心金句/内容摘要/知识要点/个人批注预留区）\\n1. MQTT协议结合工业PLC的数据采集 — 微信公众号（独数易智）— 20\"}, {\"file\": \"操作日志_2026_07_21.md\", \"preview\": \"采集 15 篇（5 领域 × 3 篇），存放于 `Inbox/`（文件名前缀 `20260721_`）。每篇含完整 YAML frontmatter（含 `status: 待归档`，遵循 Inbox 素材 KB 合规标准）+ 清洗后正文 + 结构化模块（核心金句 / 内容摘要 / 知识要点 / 个人批注预留区）；正文首次出现的关键术语已生成双链（如 [[OPC UA]]、[[TSN]]、[[SCADA]]、[[Modbus]]、[[Agent]]、[[LLM]]）。\\n| 领域 | 文章标题 | 来源平台 | 原文日期 |\\n|------|----------|----------|------\"}, {\"file\": \"操作日志_2026_07_20.md\", \"preview\": \"> 本日志记录知识库自动化操作，时间戳为 agent 实际操作的北京时间（UTC+8）。\\n**操作类型**：每日多渠道知识采集（15 篇，5 领域 × 3 篇）\\n**时间窗口**：优先最近 24h~7 天（2026-07-07 ~ 2026-07-20）\\n**存储位置**：`Inbox/` 下 5 个分类子目录，文件名 `YYYYMMDD_主题关键词.md`\\n**说明**：小红书 / 微信公众号受反爬限制未直接抓取，改用可访问的聚合/行业站点并如实标注 `source`；正文内容取自搜索摘要与可访问页面，原文 URL 已记录于各笔记 `source_url`。\\n| 时间(北京时间) | 文章标\"}, {\"file\": \"操作日志_2026_07_19.md\", \"preview\": \"**采集渠道**：Web 搜索 + Web 抓取。任务要求优先小红书、微信公众号；受平台反爬限制，实际可稳定抓取的来源为腾讯新闻、语雀、CSDN、今日头条、CBC 金属网、程序员茄子博客、Last9、FunWithLinux、findarepo、GitHub Topics、人人都是产品经理、致远互联等，均已作为 `source` 字段如实记录。\\n**时间范围**：优先最近 24h–7 天（2026-07-11 至 2026-07-19）；个别来源发布日期更早，已在对应笔记 frontmatter 的 `date` 中如实标注，未做凑数。\\n**采集结果**：共 15 篇，按 5 大领域各 3 篇\"}, {\"file\": \"操作日志_2026_07_18.md\", \"preview\": \"title:\\ndate:\\ntype:\\ntags:\\n  - 日志\\n  - 操作记录\\ncategory:\\ndescription:\"}, {\"file\": \"操作日志_2026_07_17.md\", \"preview\": \"title:\\ndate:\\ntype:\\ntags:\\n  - 操作日志\\nstatus: 定稿\\n**操作人**: Agent\\n**操作类型**: 批量维护\"}], \"recent_briefs\": [{\"file\": \"认知简报_2026-07-30.md\", \"title\": \"认知简报 2026-07-30\", \"date\": \"2026-07-30\", \"preview\": \"---\\ntitle: 认知简报 2026-07-30\\ndate: 2026-07-30\\ntags:\\n  - 认知简报\\n  - 结构体检\\n  - 知识治理\\n  - 2026年7月\\nstatus: 定稿\\nsource: 原创思考\\n---\\n\\n# 认知简报 2026-07-30\\n\\n> 全面结构体检日，全库 894 篇笔记，952 标签，2339 双链。本期侧重结构完整性而非知识增量。\\n\\n## 结构健康度\\n\\n| 维度 | 评分 | 关键指标 |\\n|------|------|----------|\\n| 目录合规 | ✓ | 7 核心目录，无异常一级目录 |\\n| frontmatter 合规 | ✓ 100% | 抽样 50 文件/19 子目录全部通过 |\\n| 索引一致性 | ⚠️ 已修复 | 3 处失配（系统与软件+2、工业自动化+1） |\\n| Inbox 积压 | ✓ 0 | 空仓，5 子目录索引\"}, {\"file\": \"认知简报_2026-07-29.md\", \"title\": \"认知简报 2026-07-29\", \"date\": \"2026-07-29\", \"preview\": \"---\\ntitle: 认知简报 2026-07-29\\ndate: 2026-07-29\\ntags:\\n  - 认知简报\\n  - 知识库管理\\n  - 结构体检\\n  - 建词\\nsource: 原创思考\\nstatus: 定稿\\n---\\n\\n# 认知简报 2026-07-29（结构体检 + 建词专刊 · 终版）\\n\\n> 触发方式：日更认知简报自动化（全面结构体检模式）。执行时段：20:31-21:00（北京时间）。\\n\\n## 一、结构健康度\\n\\n| 维度 | 状态 | 说明 |\\n|------|------|------|\\n| frontmatter 合规率 | ✅ 891/891（100%） | 含 YAML 块完整性 + CRLF 兼容校验；仅修 1 处（Agent框架五强对比.md 补 `status: 待归档`） |\\n| 根目录规范 | ✅ 正常 | 仅 7 核心目录 + AGENTS.md + 3 \"}, {\"file\": \"认知简报_2026-07-28.md\", \"title\": \"认知简报_2026-07-28\", \"date\": \"2026-07-28\", \"preview\": \"---\\ntitle: 认知简报_2026-07-28\\ndate: 2026-07-28\\ntags:\\n  - 认知简报\\n  - 知识管理\\n  - 结构体检\\nsource: 原创思考\\nstatus: 定稿\\n---\\n\\n# 认知简报 2026-07-28（全面结构体检专刊）\\n\\n> 本期由「知识库全面结构体检」任务生成，覆盖 frontmatter 合规、索引一致性、清单重算、Inbox 治理与 AGENTS.md 运行状态五个维度。\\n\\n## 一、结构健康度\\n\\n| 维度 | 状态 | 数据 |\\n|------|------|------|\\n| 根目录结构 | ✅ 合规 | 7 个核心目录 + AGENTS.md，无异常一级目录（desktop.ini 为系统文件，可忽略） |\\n| Frontmatter 合规率 | ✅ 100% | Inbox/Notes 共 892 篇，修复 41 处后零缺陷 |\"}, {\"file\": \"认知简报_2026-07-27.md\", \"title\": \"认知简报 2026-07-27\", \"date\": \"2026-07-27\", \"preview\": \"---\\ntitle: 认知简报 2026-07-27\\ndate: 2026-07-27\\ntype: 认知简报\\ncategory: Ideas\\ntags:\\n  - 认知简报\\n  - 知识库体检\\n  - 结构修复\\nsource: 内网笔记\\nstatus: 定稿\\n---\\n\\n# 认知简报 2026-07-27\\n\\n> **生成时间**: 2026-07-27  \\n> **知识库版本**: 全面结构体检后  \\n> **与上次对比**: 2026-07-26\\n\\n---\\n\\n## 结构健康度\\n\\n| 维度 | 当前值 | 上次值 | 变化 |\\n|------|--------|--------|------|\\n| Notes 内容文件 | 875 篇 | 875 篇 | 0 |\\n| Inbox 待归档 | 14 篇 | 0 篇 | +14（实际存量，之前索引虚高） |\\n| wiki 词条 | 178 个 | \"}, {\"file\": \"认知简报_2026-07-26.md\", \"title\": \"认知简报_2026-07-26\", \"date\": \"2026-07-26\", \"preview\": \"---\\ntitle: 认知简报_2026-07-26\\ndate: 2026-07-26\\ntype: 认知简报\\ncategory: Ideas\\ntags:\\n  - 认知简报\\n  - 知识库体检\\n  - 周复盘\\nsource: 内网笔记\\nstatus: 定稿\\n---\\n\\n# 认知简报_2026-07-26\\n\\n> **生成时间**: 2026-07-26  \\n> **知识库版本**: 07-23 批量导入后  \\n> **与上次对比**: 2026-07-25\\n\\n---\\n\\n## 结构健康度\\n\\n| 维度 | 当前值 | 上次值 | 变化 |\\n|------|--------|--------|------|\\n| Notes 内容文件 | 875 篇 | 875 篇 | 0 |\\n| Inbox 待归档 | 0 篇 | 19 篇 | -19（已清空幽灵索引） |\\n| 标签总数 | 860 个 | 899 \"}, {\"file\": \"认知简报_2026-07-25.md\", \"title\": \"认知简报 2026-07-25\", \"date\": \"2026-07-25\", \"preview\": \"---\\ntitle: 认知简报 2026-07-25\\ndate: 2026-07-25\\ntags:\\n  - 认知简报\\n  - 知识库健康\\nsource: 原创\\nstatus: 定稿\\n---\\n\\n# 认知简报 2026-07-25\\n\\n## 结构健康度\\n\\n| 指标 | 当前值 | 上次值(07-24) | 变化 |\\n|------|--------|---------------|------|\\n| 核心目录 | 7个 + 1异常 | 7个 | `整理/`幽灵目录待清理 |\\n| Notes 总量 | 875 篇 | 869 篇 | +6 |\\n| Inbox 待归档 | 0 篇 | 18 篇 | -18（已归档至Notes） |\\n| wiki 词条 | 58 个 | 52 个 | +6（今日批次建词） |\\n| Ideas 认知简报 | 25 篇 | 24 篇 | +1（本篇） |\\n| 标签种类 |\"}, {\"file\": \"认知简报_2026-07-24.md\", \"title\": \"认知简报 2026-07-24\", \"date\": \"2026-07-24\", \"preview\": \"---\\r\\r\\ntitle: 认知简报 2026-07-24\\r\\r\\ndate: 2026-07-24\\r\\r\\ntags:\\r\\r\\n  - 认知简报\\r\\r\\n  - 知识库健康\\r\\r\\n  - 知识管理\\r\\r\\n  - 结构体检\\r\\r\\nsource: 原创思考\\r\\r\\nstatus: 定稿\\r\\r\\n---\\r\\r\\n# 认知简报 2026-07-24\\r\\n\\r\\n> 综合健康度评分 **95/100**：本次全库结构大体检完成五项核心任务——Frontmatter 规范化、索引回环校验、双清单重算、Inbox 格式化、归档链路排查。最大发现是 `source` 字段长期缺失率高达 82.2%（714/869），已于本次批量补齐。索引体系修复 26 处失配（Inbox 17 条幽灵条目 + Notes 24 篇遗漏）。知识库从\\\"能用\\\"跃升至\\\"规范可用\\\"。\\r\\n\\r\\n---\\r\\n\\r\\n## 一、知识库结构健康度\\r\\n\\r\\n### 1.1 目录完整性\\r\\n\\r\"}], \"recent_reviews\": [{\"file\": \"周复盘_2026-07-25.md\", \"preview\": \"---\\n\\ntitle: 周复盘 2026-07-25\\n\\ndate: 2026-07-25\\n\\ntags:\\n\\n  - 周复盘\\n\\nsource: 原创思考\\n\\nstatus: 定稿\\n\\n---\\n\\n# 周复盘 2026-07-25\\n\\n> 本周知识库进入了\\\"低维护成本稳态\\\"——从 07-19 的 760 篇批量修复断崖下降到日均 5-25 篇，健康度从 82 攀升至 92。最大的结构性变化是**输入模式升级**：从\\\"资讯采集\\\"演进为\\\"标准文献建库\\\"（17 篇电力规约/Modbus/MQTT 原文入仓），知识底座从\\\"故障经验+产品手册\\\"延展至\\\"协议标准\\\"。认知层面出现一个关键转折信号：Agent 自动化治理已\"}, {\"file\": \"周复盘_2026-07-18.md\", \"preview\": \"---\\r\\r\\ntitle: 周复盘 2026-07-18\\r\\r\\ndate: 2026-07-18\\r\\r\\ntags:\\r\\r\\n  - 周复盘\\r\\r\\nsource: 原创思考\\r\\r\\nstatus: 定稿\\r\\r\\n---\\r\\r\\n# 周复盘 2026-07-18\\r\\n\\r\\n> 本周知识库经历了一次「术语化跃迁」——力控产品体系完成 52 条 wiki 词条闭环（含本周新增 18 条高频术语），同时涌入 100+ 篇 Notes 与 15 篇 Inbox 原始素材。从认知层面看，你已从「学 Agent 工具」走到「用 Agent 治理知识库」并跑通自动化，角色正滑向「AI 系统构建者 + 知识库操盘手」。但一个老问题再次出现：\"}, {\"file\": \"周复盘_2026-07-11.md\", \"preview\": \"---\\r\\r\\ntitle: 周复盘 2026-07-11\\r\\r\\ndate: 2026-07-11\\r\\r\\ntags:\\r\\r\\n  - 周复盘\\r\\r\\nsource: 原创思考\\r\\r\\nstatus: 定稿\\r\\r\\n---\\r\\r\\n# 周复盘 2026-07-11\\r\\n\\r\\n> 本周知识库经历了一次「大消化」——Inbox 从上周的 37 篇高峰降至 14 篇（-59%），三个子分类全部清空，Notes 知识文章从 40 篇跃升至 67 篇。与此同时，[[项目管理]]方法论和 Agent 实战体系同步形成闭环，产出了一篇原创方法论提炼和连续 6 天的认知简报。这是知识库从「囤积阶段」迈向「消化阶段」的第一个完整周。\\r\\n\\r\\n--\"}, {\"file\": \"周复盘_2026-07-03.md\", \"preview\": \"---\\r\\r\\ntitle: 周复盘 2026-07-03\\r\\r\\ndate: 2026-07-03\\r\\r\\ntags:\\r\\r\\n  - 周复盘\\r\\r\\nsource: 原创思考\\r\\r\\nstatus: 定稿\\r\\r\\n---\\r\\r\\n# 周复盘 2026-07-03\\r\\n\\r\\n> 本周知识库从「快速扩张」进入「结构定型」，自动化同步、项目开发、方法论输入三股力量同时发力，但「消化率」仍是最大瓶颈。\\r\\n\\r\\n---\\r\\n\\r\\n## 一、本周知识输入\\r\\n\\r\\n### 1.1 Inbox 新增：26 篇，5 个子目录\\r\\n\\r\\n| 子目录 | 数量 | 核心主题 |\\r\\n|--------|------|----------|\\r\\n| [[项目管理]\"}], \"ideas_summary\": [{\"file\": \"OPC通讯诊断清单.md\", \"size\": 3442}, {\"file\": \"周复盘_2026-07-25.md\", \"size\": 3985}, {\"file\": \"周复盘_2026-07-18.md\", \"size\": 4033}, {\"file\": \"周复盘_2026-07-11.md\", \"size\": 4748}, {\"file\": \"周复盘_2026-07-03.md\", \"size\": 4581}, {\"file\": \"认知简报_2026-07-30.md\", \"size\": 2205}, {\"file\": \"认知简报_2026-07-29.md\", \"size\": 3236}, {\"file\": \"认知简报_2026-07-28.md\", \"size\": 2245}, {\"file\": \"认知简报_2026-07-27.md\", \"size\": 3903}, {\"file\": \"认知简报_2026-07-26.md\", \"size\": 3082}], \"structural_issues\": [\"根目录异常目录: .workbuddy\", \"操作日志命名冲突（连字符）: 操作日志_2026-07-30.md\", \"死链风险: 高频双链中约 16 条找不到对应 .md 文件\"], \"archive_candidates\": [\".workbuddy\"]}";
+
+function initCharts(data) {
+  const s = data.summary;
+  document.getElementById('updateTime').textContent = '更新于 ' + data.generated_at;
+  renderKPI(data);
+  renderNotesDistChart(data);
+  renderWikiCatChart(data);
+  renderTopLinksChart(data);
+  renderBriefsChart(data);
+  renderWikiTopList(data);
+  renderIssues(data);
+  renderLogs(data);
+  renderInbox(data);
+  renderLearnTrack(data);
+  renderAdvise(data);
+  document.getElementById('footerNote').textContent = '知识库看板 · ' + s.total_md + ' 篇笔记 · ' + s.wiki_count + ' 个词条 · 数据更新 ' + data.generated_at;
+}
+
+try {
+  initCharts(JSON.parse(KB_DATA));
+} catch(e) {
+  document.querySelector('.dashboard').innerHTML = `<div class="empty-state" style="padding:60px"><p style="font-size:16px;margin-bottom:12px">⚠️ 数据解析失败</p><p>${e.message}</p></div>`;
+}
+if (typeof echarts === 'undefined') document.title += ' (ECharts 加载中)';
+
+function renderKPI(d) {
+  const s = d.summary;
+  const items = [
+    { label:'总笔记数', value:s.total_md, accent:'green', sub:'含 7 大核心目录' },
+    { label:'Notes', value:s.dir_counts.Notes||0, accent:'blue', sub:(d.notes_breakdown.Notes?Object.keys(d.notes_breakdown.Notes).length:0)+' 个子目录' },
+    { label:'wiki 词条', value:s.wiki_count, accent:'purple', sub:(d.wiki_tags.by_category?Object.keys(d.wiki_tags.by_category).length:0)+' 个分类' },
+    { label:'Ideas', value:s.dir_counts.Ideas||0, accent:'teal', sub:'原创思考与认知简报' },
+    { label:'Inbox', value:s.inbox_count, accent:'amber', sub:'待归档素材' },
+    { label:'结构问题', value:d.structural_issues.length, accent:'coral', sub:'需关注' },
+  ];
+  document.getElementById('kpiGrid').innerHTML = items.map(item => `
+    <div class="kpi-card"><div class="kpi-accent ${item.accent}"></div>
+      <div class="kpi-label">${item.label}</div>
+      <div class="kpi-value">${item.value}</div>
+      <div class="kpi-sub">${item.sub}</div>
+    </div>`).join('');
+}
+
+function renderNotesDistChart(d) {
+  if (typeof echarts === 'undefined') return;
+  const chart = echarts.init(document.getElementById('chartNotesDist'));
+  const entries = Object.entries(d.notes_breakdown.Notes||{}).slice(0,12);
+  const colors = ['#3b82f6','#60a5fa','#22d3ee','#14b8a6','#8b5cf6','#a78bfa','#f59e0b','#fb7185','#38bdf8','#34d399','#818cf8','#f472b6'];
+  chart.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#242424',borderColor:'#484848',textStyle:{color:'#d4d4d4',fontSize:10}},
+    grid:{left:34,right:8,top:12,bottom:32},
+    xAxis:{type:'category',data:entries.map(x=>x[0]),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#8f8f8f',fontSize:7,interval:0,rotate:25}},
+    yAxis:{type:'value',axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#8f8f8f',fontSize:7},splitLine:{lineStyle:{color:'#3a3a3a'}}},
+    series:[{type:'bar',data:entries.map((x,i)=>({value:x[1],itemStyle:{borderRadius:[8,8,3,3],color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:colors[i]},{offset:1,color:echarts.color.lift(colors[i],-.28)}])}})),barMaxWidth:22,showBackground:true,backgroundStyle:{color:'#303643',borderRadius:8}}]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+function renderWikiCatChart(d) {
+  if (typeof echarts === 'undefined') return;
+  const chart = echarts.init(document.getElementById('chartWikiCat'));
+  const entries = Object.entries(d.wiki_tags.by_category||{}).slice(0,8);
+  const colors = ['#6d5dfc','#27c7b8','#f0b44d','#ef6b78','#5698f5','#9a7af2','#64c48a','#aeb6c5'];
+  chart.setOption({
+    tooltip:{trigger:'item',backgroundColor:'#242424',borderColor:'#484848',textStyle:{color:'#d4d4d4',fontSize:10},formatter:'{b}<br/>{c} 个 · {d}%'},
+    title:{text:String(d.summary.wiki_count),subtext:'WIKI 词条',left:'34%',top:'34%',textAlign:'center',textStyle:{color:'#e9e5ff',fontSize:20,fontWeight:700},subtextStyle:{color:'#8f8f8f',fontSize:8}},
+    legend:{type:'scroll',orient:'vertical',right:8,top:'middle',itemWidth:7,itemHeight:7,textStyle:{color:'#b6b6b6',fontSize:8}},
+    series:[{type:'pie',radius:['52%','74%'],center:['34%','52%'],avoidLabelOverlap:true,padAngle:2,itemStyle:{borderRadius:5,borderColor:'#282828',borderWidth:2},label:{show:false},data:entries.map((x,i)=>({name:x[0],value:x[1],itemStyle:{color:colors[i]}}))}]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+function renderTopLinksChart(d) {
+  if (typeof echarts === 'undefined') return;
+  const chart = echarts.init(document.getElementById('chartTopLinks'));
+  const top = (d.top_wikilinks||[]).slice(0,20).reverse();
+  const colors = ['#3b82f6','#60a5fa','#38bdf8','#22d3ee','#14b8a6','#8b5cf6','#818cf8','#a78bfa','#f59e0b','#fb7185'];
+  chart.setOption({
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#242424',borderColor:'#484848',textStyle:{color:'#d4d4d4',fontSize:10}},
+    grid:{left:82,right:26,top:5,bottom:12},
+    dataZoom:[{type:'inside',yAxisIndex:0,start:50,end:100,zoomLock:true}],
+    xAxis:{type:'value',show:false},
+    yAxis:{type:'category',data:top.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#b6b6b6',fontSize:8}},
+    series:[{type:'bar',data:top.map((x,i)=>({value:x.count,itemStyle:{borderRadius:8,color:new echarts.graphic.LinearGradient(1,0,0,0,[{offset:0,color:colors[i%colors.length]},{offset:1,color:echarts.color.lift(colors[i%colors.length],-.3)}])}})),barWidth:6,label:{show:true,position:'right',color:'#75a7ff',fontSize:7},showBackground:true,backgroundStyle:{color:'#303643',borderRadius:8}}]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+function renderBriefsChart(d) {
+  if (typeof echarts === 'undefined') return;
+  const chart = echarts.init(document.getElementById('chartBriefs'));
+  const recent = (d.ideas_summary||[]).slice(0,14).reverse();
+  const labels = recent.map(x=>x.file.replace(/^认知简报_|^|\.md$/g,'').slice(0,10));
+  const sizes = recent.map(x=>Math.round(x.size/100)*100||0), has=sizes.some(x=>x>0);
+  chart.setOption({
+    tooltip:{trigger:'axis',backgroundColor:'#242424',borderColor:'#484848',textStyle:{color:'#d4d4d4',fontSize:9}},
+    grid:{left:34,right:12,top:15,bottom:27},
+    xAxis:{type:'category',boundaryGap:false,data:has?labels:['暂无数据'],axisLine:{lineStyle:{color:'#424242'}},axisTick:{show:false},axisLabel:{color:'#8f8f8f',fontSize:7,rotate:25}},
+    yAxis:{type:'value',show:has,axisLabel:{color:'#8f8f8f',fontSize:7},splitLine:{lineStyle:{color:'#3a3a3a'}}},
+    series:[{type:'line',data:has?sizes:[0],smooth:.45,symbol:'circle',symbolSize:5,lineStyle:{color:'#6d5dfc',width:2.5},itemStyle:{color:'#fff',borderColor:'#6d5dfc',borderWidth:2},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(109,93,252,.3)'},{offset:1,color:'rgba(109,93,252,.01)'}])}}]
+  });
+  window.addEventListener('resize',()=>chart.resize());
+}
+
+function renderWikiTopList(d) {
+  const top = (d.top_wikilinks||[]).slice(0,10);
+  document.getElementById('wikiTopList').innerHTML = top.map(x=>`<span class="wiki-tag">${x.name} <span class="freq">${x.count}</span></span>`).join('')||'<div class="empty-state">暂无数据</div>';
+}
+
+function renderIssues(d) {
+  const issues = d.structural_issues||[];
+  document.getElementById('issueCount').textContent = issues.length;
+  document.getElementById('issueList').innerHTML = issues.length?issues.map(x=>{const dot=x.includes('异常')||x.includes('冲突')?'error':x.includes('死链')||x.includes('缺失')?'warning':'info';return `<div class="issue-item"><span class="issue-dot ${dot}"></span>${x}</div>`;}).join(''):'<div class="empty-state">没有结构性问题</div>';
+}
+
+function renderLogs(d) {
+  const logs = d.recent_logs||[];
+  document.getElementById('logList').innerHTML = logs.slice(0,8).map(x=>`<div class="log-item"><div class="log-date">${x.file}</div><div class="log-preview">${(x.preview||'').slice(0,120)}${(x.preview||'').length>120?'...':''}</div></div>`).join('')||'<div class="empty-state">暂无操作日志</div>';
+}
+
+function renderInbox(d) {
+  const inbox = (d.inbox_backlog||[]).filter(x=>!x.file.includes('.索引'));
+  document.getElementById('inboxCount').textContent = inbox.length;
+  document.getElementById('inboxList').innerHTML = inbox.slice(0,10).map(x=>`<div class="log-item"><div class="log-preview">${x.title||x.file}</div><div class="log-date">${x.date||'日期未知'} · ${x.file}</div></div>`).join('')||'<div class="empty-state">Inbox 无积压素材</div>';
+}
+
+function renderLearnTrack(d) {
+  document.getElementById('learnTrack').innerHTML = `<div class="summary-text"><p style="margin-bottom:6px;color:var(--text-default)">简报：${(d.ideas_summary||[]).filter(x=>x.file.includes('简报')).length} 条</p><p style="margin-bottom:6px">最近简报：${(d.ideas_summary||[]).filter(x=>x.file.includes('简报')).slice(0,1).map(x=>x.file).join('')||'暂无'}</p><p style="margin-bottom:6px">Ideas 数量：${d.summary.dir_counts.Ideas||0} 篇</p><p>知识缺口：${d.structural_issues.length>0?d.structural_issues.length+' 个待解决问题':'暂无显著缺口'}</p></div>`;
+}
+
+function renderAdvise(d) {
+  const s = d.summary;
+  const notes = d.notes_breakdown.Notes||{};
+  const sugs = [];
+  const entries = Object.entries(notes).sort((a,b)=>b[1]-a[1]);
+  if (entries.length>0) { const big=entries[0]; sugs.push('「'+big[0]+'」占比 '+Math.round(big[1]/s.dir_counts.Notes*100)+'%，考虑拆分更细粒度子目录'); }
+  if (s.inbox_count>0) sugs.push('Inbox 有 '+s.inbox_count+' 篇待归档，建议今日集中整理');
+  const topLinks = d.top_wikilinks||[];
+  const wikiNames = d.wiki_files_list||[];
+  const missing = topLinks.filter(x=>x.count>=10&&!wikiNames.includes(x.name)).slice(0,6);
+  if (missing.length>0) sugs.push('以下高频术语尚无 wiki 词条：'+missing.map(x=>x.name).join('、'));
+  if (d.structural_issues.length>0) sugs.push('存在 '+d.structural_issues.length+' 个结构性问题待处理');
+  if (d.structural_issues.some(x=>x.includes('命名冲突'))) sugs.push('修复操作日志命名冲突：统一使用下划线格式');
+  if (s.broken_link_estimate>5) sugs.push('约 '+s.broken_link_estimate+' 条死链需回检清理');
+  if (sugs.length===0) sugs.push('知识库状态良好，继续保持每日维护节奏');
+  document.getElementById('adviseList').innerHTML = sugs.map(x=>`<div class="log-item" style="border-bottom:none;padding:4px 0"><div class="log-preview" style="font-size:11px">${x}</div></div>`).join('');
+}
+</script>
+</body>
+</html>

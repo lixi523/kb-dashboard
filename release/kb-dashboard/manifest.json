@@ -1,0 +1,9 @@
+{
+  "id": "kb-dashboard",
+  "name": "知识库看板",
+  "version": "1.3.0",
+  "minAppVersion": "1.0.0",
+  "description": "定时扫描知识库生成看板数据 (kb-dashboard-data.json)，侧边栏快捷方式一键在 Obsidian 内打开看板视图",
+  "author": "李晓林",
+  "isDesktopOnly": true
+}

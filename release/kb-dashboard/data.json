@@ -1,0 +1,5 @@
+{
+  "autoScan": true,
+  "scanIntervalHours": 24,
+  "dataFileName": ".obsidian/plugins/kb-dashboard/kb-dashboard-data.json"
+}

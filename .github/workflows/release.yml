@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Package plugin artifacts
+        run: |
+          cd release/kb-dashboard
+          zip -r "$GITHUB_WORKSPACE/kb-dashboard-${{ github.ref_name }}.zip" .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            kb-dashboard-${{ github.ref_name }}.zip
+            release/kb-dashboard/manifest.json
+            release/kb-dashboard/main.js
+            release/kb-dashboard/data.json
+          generate_release_notes: true

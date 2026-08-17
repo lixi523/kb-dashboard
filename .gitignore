@@ -1,0 +1,3 @@
+# Agent / tool local state (not part of the project)
+.freebuff/
+.superpowers/
